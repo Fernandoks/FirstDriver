@@ -1,16 +1,74 @@
-/*
- * stm32f446xx_spi_driver.c
- *
- *  Created on: 27 de jan de 2020
- *      Author: Fernando
+/*******************************************************************************
+* Title                 :   TODO: MODULE TITLE
+* Filename              :   TODO: MODULE.c
+* Author                :   Jacob Beningo
+* Origin Date           :   04/01/2015
+* Version               :   1.0.0
+* Compiler              :   TODO: COMPILER GOES HERE
+* Target                :   TODO: MCU GOES HERE
+* Notes                 :   None
+*
+/*************** SOURCE REVISION LOG *****************************************
+*
+*    Date    Version   Author         Description
+*  04/01/15   1.0.0   Jacob Beningo   Initial Release.
+*
+*******************************************************************************/
+/** @file TODO: MODULE.c
+ *  @brief This is the source file for TODO: WHAT DO I DO?
  */
 
+/******************************************************************************
+* Includes
+*******************************************************************************/
+#include "stm32f446xx_spi_driver.h"		/* For TODO: WHY ME? */
 
-#include "stm32f446xx_spi_driver.h"
+/******************************************************************************
+* Module Preprocessor Constants
+*******************************************************************************/
 
-/*
- * Peripheral clock
- */
+
+/******************************************************************************
+* Module Preprocessor Macros
+*******************************************************************************/
+
+/******************************************************************************
+* Module Typedefs
+*******************************************************************************/
+
+/******************************************************************************
+* Module Variable Definitions
+*******************************************************************************/
+
+
+
+/******************************************************************************
+* Function Definitions
+*******************************************************************************/
+
+/******************************************************************************
+* Function : SPI_PeriClockControl()
+*//**
+* \b Description:
+*
+* This function is used to initialize the Dio based on the configuration table
+*  defined in dio_cfg module.
+*
+* PRE-CONDITION: TBD
+*
+* POST-CONDITION: TBD
+*
+* @return 		VOID
+*
+* \b Example Example:
+* @code
+*
+* @endcode
+*
+* @see SPI_PeriClockControl
+
+*******************************************************************************/
+
 void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t EnableDisable)
 {
 	if (EnableDisable == ENABLE)
@@ -54,9 +112,27 @@ void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t EnableDisable)
 }
 
 
-/*
- * Init and De-Init
- */
+/******************************************************************************
+* Function : SPI_Init()
+*//**
+* \b Description:
+*
+* This function is used to initialize the SPI
+*
+* PRE-CONDITION: TBD
+*
+* POST-CONDITION: TBD
+*
+* @return 		VOID
+*
+* \b Example Example:
+* @code
+*
+* @endcode
+*
+* @see SPI_Init
+
+*******************************************************************************/
 
 void SPI_Init(SPI_Handle_t *pSPIHandle)
 {
@@ -166,7 +242,9 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTXBuffer, uint32_t Lenght)
 
 }
 
-
+/*
+ * Receive data from SPI
+ */
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRXBuffer, uint32_t Lenght)
 {
 
