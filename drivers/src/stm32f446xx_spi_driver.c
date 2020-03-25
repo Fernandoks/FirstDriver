@@ -54,7 +54,7 @@
 * This function is used to initialize the Dio based on the configuration table
 *  defined in dio_cfg module.
 *
-* PRE-CONDITION: TBD
+* PRE-CONDITION: call with a valid SPI_RegDef_t
 *
 * POST-CONDITION: TBD
 *
@@ -62,7 +62,7 @@
 *
 * \b Example Example:
 * @code
-*
+*			SPI_PeriClockControl(SPI1, Enable)
 * @endcode
 *
 * @see SPI_PeriClockControl
@@ -119,16 +119,12 @@ void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t EnableDisable)
 *
 * This function is used to initialize the SPI
 *
-* PRE-CONDITION: TBD
+* PRE-CONDITION: Call with a valid SPI_Handle_t, correctly filled.
 *
 * POST-CONDITION: TBD
 *
 * @return 		VOID
 *
-* \b Example Example:
-* @code
-*
-* @endcode
 *
 * @see SPI_Init
 
@@ -180,7 +176,27 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 	pSPIHandle->pSPIx->CR1 = tempreg;
 }
 
+/******************************************************************************
+* Function : SPI_DeInit()
+*//**
+* \b Description:
+*
+* This function is used to initialize the SPI
+*
+* PRE-CONDITION: Call with a valid SPI_RegDef_t
+*
+* POST-CONDITION: TBD
+*
+* @return 		VOID
+*
+* \b Example Example:
+* @code
+*
+* @endcode
+*
+* @see SPI_Init
 
+*******************************************************************************/
 
 void SPI_DeInit(SPI_RegDef_t *pSPIx)
 {
