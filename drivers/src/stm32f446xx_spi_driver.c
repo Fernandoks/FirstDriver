@@ -1,8 +1,8 @@
 /*******************************************************************************
-* Title                 :   TODO: MODULE TITLE
-* Filename              :   TODO: MODULE.c
-* Author                :   Jacob Beningo
-* Origin Date           :   04/01/2015
+* Title                 :   STM32F446 SPI Driver
+* Filename              :   stm32f446xx_spi_driver.c
+* Author                :   Fernando Kaba Surjus
+* Origin Date           :   24/03/2020
 * Version               :   1.0.0
 * Compiler              :   TODO: COMPILER GOES HERE
 * Target                :   TODO: MCU GOES HERE
@@ -14,7 +14,7 @@
 *  04/01/15   1.0.0   Jacob Beningo   Initial Release.
 *
 *******************************************************************************/
-/** @file TODO: MODULE.c
+/** @file : Mstm32f446xx_spi_driver.c
  *  @brief This is the source file for TODO: WHAT DO I DO?
  */
 
