@@ -11,7 +11,7 @@
 /*************** SOURCE REVISION LOG *****************************************
 *
 *    Date    Version   Author         Description
-*  04/01/15   1.0.0   Jacob Beningo   Initial Release.
+*  24/03/20   1.0.0   Fernando KS  Initial Release.
 *
 *******************************************************************************/
 /** @file : Mstm32f446xx_spi_driver.c
