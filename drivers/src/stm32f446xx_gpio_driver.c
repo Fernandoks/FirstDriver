@@ -9,8 +9,8 @@
 
 
 /*
- * GPIO Peripheral clock
-*/
+ * Peripheral clock
+ */
 
 /************************************************************************
  * @fn: 					GPIO_PeriClockControl
