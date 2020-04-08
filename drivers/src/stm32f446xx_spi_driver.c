@@ -7,7 +7,7 @@
 * Compiler              :   TODO: COMPILER GOES HERE
 * Target                :   TODO: MCU GOES HERE
 * Notes                 :   None
-*
+*/
 /*************** SOURCE REVISION LOG *****************************************
 *
 *    Date    Version   Author         Description
@@ -149,7 +149,7 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 		//BIDI SET
 		tempreg |= (1 << SPI_CR1_BIDIMODE);
 	}
-	else if (pSPIHandle->SPIConfig.SPI_BusConfig == SPI_BUSCONFIG_SIMPLEX_READONLY)
+	else if (pSPIHandle->SPIConfig.SPI_BusConfig == SPI_BUSCONFIG_SIMPLEX_RXONLY)
 	{
 		//BIDI clear and RXONLY SET
 		tempreg |= (1 << SPI_CR1_RXONLY);
@@ -232,7 +232,7 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName)
 }
 
 /*
- * Data send and Receive
+ * Data send and Receive - Blocking mode
  */
 
 void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTXBuffer, uint32_t Lenght)
@@ -242,18 +242,22 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTXBuffer, uint32_t Lenght)
 		//while( !( pSPIx->SR & (1 << SPI_SR_TXE) ) )  //This tests if the bit position is set
 		while( SPI_GetFlagStatus(pSPIx, SPI_TXE_FLAG) == FLAG_RESET );
 
-
-		if ( (pSPIx->CR1 << SPI_CR1_DFF) == 1)
+		//Verify the Frame format (8bits or 16 bits) using the CR1_DFF
+		if ( (pSPIx->CR1 & (1 << SPI_CR1_DFF) ) == 1)
 		{
 			//16bits
-			pSPIx->DR = pTXBuffer;
+			pSPIx->DR = *((uint16_t*)pTXBuffer);
+			Lenght--;
+			(uint16_t*)pTXBuffer++;
+
 		}
 		else
 		{
 			//8bits
-			pSPIx->DR = pTXBuffer;
+			pSPIx->DR = *(pTXBuffer);
+			pTXBuffer++;
 		}
-		Length--;
+		Lenght--;
 	}
 
 }

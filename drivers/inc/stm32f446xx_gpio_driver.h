@@ -38,27 +38,27 @@ typedef struct{
 }GPIO_Handle_t;
 
 
+
 /*
  * @GPIO_PINS
  * GPIO Pins
  */
-#define GPIO_PIN_0				0
-#define GPIO_PIN_1				1
-#define GPIO_PIN_2				2
-#define GPIO_PIN_3				3
-#define GPIO_PIN_4				4
-#define GPIO_PIN_5				5
-#define GPIO_PIN_6				6
-#define GPIO_PIN_7				7
-#define GPIO_PIN_8				8
-#define GPIO_PIN_9				9
-#define GPIO_PIN_10				10
-#define GPIO_PIN_11				11
-#define GPIO_PIN_12				12
-#define GPIO_PIN_13				13
-#define GPIO_PIN_14				14
-#define GPIO_PIN_15				15
-
+#define GPIO_PIN_0				0U
+#define GPIO_PIN_1				1U
+#define GPIO_PIN_2				2U
+#define GPIO_PIN_3				3U
+#define GPIO_PIN_4				4U
+#define GPIO_PIN_5				5U
+#define GPIO_PIN_6				6U
+#define GPIO_PIN_7				7U
+#define GPIO_PIN_8				8U
+#define GPIO_PIN_9				9U
+#define GPIO_PIN_10				10U
+#define GPIO_PIN_11				11U
+#define GPIO_PIN_12				12U
+#define GPIO_PIN_13				13U
+#define GPIO_PIN_14				14U
+#define GPIO_PIN_15				15U
 
 
 /*
@@ -70,8 +70,8 @@ typedef struct{
 #define GPIO_MODE_OUT			1
 #define GPIO_MODE_ALTFN			2	/* Alternate function mode*/
 #define GPIO_MODE_ANALOG		3	/* Analog mode*/
-#define GPIO_MODE_IT_FT			4	/*Interrupt mode Rising edge trigger */
-#define GPIO_MODE_IT_RT			5	/*Interrupt mode Falling edge trigger */
+#define GPIO_MODE_IT_RT			4	/*Interrupt mode Rising edge trigger */
+#define GPIO_MODE_IT_FT			5	/*Interrupt mode Falling edge trigger */
 #define GPIO_MODE_IT_RFT		6	/*Interrupt mode Rising-Falling edge trigger */
 
 /*
@@ -116,9 +116,11 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnableDisable); /* Fir
 void GPIO_Init(GPIO_Handle_t *pGPIOHandle);
 void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
 
+
 /*
  * Data management
  */
+
 uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
 uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx);
 void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value);
@@ -129,7 +131,7 @@ void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
  * IRQ config and handling
  */
 void GPIO_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnableDisable);
-void GPIO_IRQHandling(uint8_t PinNumber);
+void GPIO_Clear_Interrupt(uint8_t PinNumber);
 void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority);
 
 

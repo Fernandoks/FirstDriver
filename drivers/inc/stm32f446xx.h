@@ -51,10 +51,12 @@
 
 
 
+
+
 /*
  * Base Address - Memory mapping
  */
-#define Flash_BASEADDRESS 			0x80000000U
+#define Flash_BASEADDRESS 			0x08000000U
 #define SRAM1_BASEADDRESS			0x20000000U  //112KB
 #define SRAM2_BASEADDRESS			0x20001C00U  //16KB
 #define SRAM 						SRAM1_BASEADDRESS
@@ -279,9 +281,9 @@ typedef struct{
  *********************************************************************************/
 
 typedef struct{
-	__vo uint32_t MODER; 			//Address offset:0x00
-	__vo uint32_t OTYPER; 			//Address offset:0x04
-	__vo uint32_t OSPEEDER; 		//Address offset:0x08
+	__vo uint32_t MODER; 			//Address offset:0x00 <= 0x40020000U
+	__vo uint32_t OTYPER; 			//Address offset:0x04 <=0x40020004U
+	__vo uint32_t OSPEEDER; 		//Address offset:0x08 <=0x40020008U
 	__vo uint32_t PUPDR; 			//Address offset:0x0C
 	__vo uint32_t IDR;				//Address offset:0x10
 	__vo uint32_t ODR;				//Address offset:0x14
@@ -417,6 +419,9 @@ typedef struct{
 									(x == GPIOF ) ? 5 :\
 									(x == GPIOG ) ? 6 :\
 									(x == GPIOH ) ? 7 :0)
+
+
+
 /*
  * Clock Enable Macros for I2Cxx
  */
@@ -489,6 +494,8 @@ typedef struct{
 /*********************************************************************************
  * Bit position definition SPI Peripheral
  *********************************************************************************/
+
+//TODO: Inform the register in comments.
 
 #define SPI_CR1_CPHA 			0
 #define SPI_CR1_CPOL 			1

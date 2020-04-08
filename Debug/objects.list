@@ -1,5 +1,6 @@
 "drivers/src/stm32f446xx_gpio_driver.o"
 "drivers/src/stm32f446xx_spi_driver.o"
 "src/main.o"
+"src/ourTest.o"
 "startup/startup_stm32.o"
 "startup/sysmem.o"

@@ -75,6 +75,12 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnableDisable){
 
 
 
+
+void __sizeof(void)
+{
+
+}
+
 /*
  * Init and De-Init
  */
@@ -85,30 +91,36 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnableDisable){
  * @Return:					-
  * @Note:					-
  */
+
+
 void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
+
 
 	uint32_t temp = 0;
 	//Configure the mode
 	//This first line tests if this is a interruption mode
-	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG){
-
-		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); // Moder uses 2 bit for each position
+	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG)
+	{
+		pGPIOHandle->pGPIOX->MODER |= ( (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode )<< (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); // Moder uses 2 bit for each position
 		pGPIOHandle->pGPIOX->MODER |= temp;
-
-
-	}else{
+	}
+	else
+	{
 		/* Interrupt Mode*/
-		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_FT){
+		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_FT)
+		{
 			//1.Configure FTSR and clear RTSR
 			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); //SET FTSR
 			EXTI->RTSR &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); //RESET RTSR
 		}
-		else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_RT){
+		else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_RT)
+		{
 			//1.Configure RTSR and clear FTSR
 			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); //SET RTSR
 			EXTI->FTSR &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); //RESET FTSR
 		}
-		else if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_RFT){
+		else if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_RFT)
+		{
 			//1.configure FTSR and RTSR
 			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); //SET RTSR
 			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); //SET FTSR
@@ -118,7 +130,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
 		uint8_t temp2 = (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 4); //This will identify the position in the register
 		uint8_t portcode = GPIO_BASEADDR_TO_PORT(pGPIOHandle->pGPIOX);
 		SYSCFG_PCLK_EN();
-		SYSCFG->EXTICR[temp1] = ( portcode << (temp2 * 2));
+		SYSCFG->EXTICR[temp1] = ( portcode << (temp2 * 4));
 
 		//3. Enable the EXTI interrupt delivery using IMR
 		EXTI->IMR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
@@ -352,12 +364,13 @@ void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority){
  * @Note:					-
  ************************************************************************/
 
-void GPIO_IRQHandling(uint8_t PinNumber){
+
+void GPIO_Clear_Interrupt(uint8_t PinNumber){
 /*
  * Remember to use the correct implementation of the EXTI_IRQHandler
  * those functions are weak defined in Startup file
  */
-	if(EXTI->PR & (1 << PinNumber)){
+	if( (EXTI->PR & (1 << PinNumber)) != 0){
 		EXTI->PR |= (1 << PinNumber); // PR register is cleared with setting 1.
 	}
 }

@@ -40,8 +40,8 @@ FirstDriver.bin \
 all: FirstDriver.elf secondary-outputs
 
 # Tool invocations
-FirstDriver.elf: $(OBJS) $(USER_OBJS) C:\Users\Fernando\Dropbox\Estudos\Embedded\STM32Workbench\FirstDriver\LinkerScript.ld
-	arm-none-eabi-gcc -o "FirstDriver.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Fernando\Dropbox\Estudos\Embedded\STM32Workbench\FirstDriver\LinkerScript.ld" --specs=nosys.specs -Wl,-Map="FirstDriver.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+FirstDriver.elf: $(OBJS) $(USER_OBJS) /home/fernandoks/Desktop/CubeWorkbench/FirstDriver/LinkerScript.ld
+	arm-none-eabi-gcc -o "FirstDriver.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/fernandoks/Desktop/CubeWorkbench/FirstDriver/LinkerScript.ld" --specs=nosys.specs -Wl,-Map="FirstDriver.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
