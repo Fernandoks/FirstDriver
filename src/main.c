@@ -30,6 +30,7 @@ void delay(void);
  */
 int main(){
 
+<<<<<<< HEAD
 	SysTickInit();
 	GPIO_Conf();
 
@@ -38,7 +39,15 @@ int main(){
 	{
 		GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
 		delay_ms(1000);
+=======
+>>>>>>> 7bfe1162eb0f6d92f05b504ea2a5711bb406f19e
 
+	GPIO_Conf();
+
+	while(1)
+	{
+
+		delay();
 	}
 
 	return 0;
@@ -52,7 +61,11 @@ void EXTI15_10_IRQHandler(void){
 	GPIO_Clear_Interrupt(GPIO_PIN_13);
 
 	GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
+<<<<<<< HEAD
 	delay_ms(100);
+=======
+	delay();
+>>>>>>> 7bfe1162eb0f6d92f05b504ea2a5711bb406f19e
 
 }
 
