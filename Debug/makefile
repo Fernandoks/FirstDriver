@@ -24,24 +24,34 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-FirstDriver.elf \
+FirstDriver-1.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-FirstDriver.list \
+FirstDriver-1.list \
 
 OBJCOPY_BIN += \
-FirstDriver.bin \
+FirstDriver-1.bin \
 
 
 # All Target
-all: FirstDriver.elf secondary-outputs
+all: FirstDriver-1.elf secondary-outputs
 
 # Tool invocations
+<<<<<<< HEAD
 FirstDriver.elf: $(OBJS) $(USER_OBJS) /home/quentin/STM32CubeIDE/dev/FirstDriver/LinkerScript.ld
 	arm-none-eabi-gcc -o "FirstDriver.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/quentin/STM32CubeIDE/dev/FirstDriver/LinkerScript.ld" --specs=nosys.specs -Wl,-Map="FirstDriver.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+=======
+<<<<<<< HEAD
+FirstDriver-1.elf: $(OBJS) $(USER_OBJS) /home/fernandoks/Desktop/CubeWorkbench/FirstDriver-1/LinkerScript.ld
+	arm-none-eabi-gcc -o "FirstDriver-1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/fernandoks/Desktop/CubeWorkbench/FirstDriver-1/LinkerScript.ld" --specs=nosys.specs -Wl,-Map="FirstDriver-1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+=======
+FirstDriver.elf: $(OBJS) $(USER_OBJS) /home/fernandoks/Desktop/CubeWorkbench/FirstDriver/LinkerScript.ld
+	arm-none-eabi-gcc -o "FirstDriver.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/fernandoks/Desktop/CubeWorkbench/FirstDriver/LinkerScript.ld" --specs=nosys.specs -Wl,-Map="FirstDriver.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+>>>>>>> 7bfe1162eb0f6d92f05b504ea2a5711bb406f19e
+>>>>>>> master
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -50,13 +60,13 @@ default.size.stdout: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-FirstDriver.list: $(EXECUTABLES)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "FirstDriver.list"
+FirstDriver-1.list: $(EXECUTABLES)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "FirstDriver-1.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-FirstDriver.bin: $(EXECUTABLES)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "FirstDriver.bin"
+FirstDriver-1.bin: $(EXECUTABLES)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "FirstDriver-1.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 

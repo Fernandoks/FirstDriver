@@ -9,7 +9,9 @@
 /*
  * Includes
  */
+
 #include "stm32f446xx_gpio_driver.h"
+#include "stm32f446xx_delay.h"
 
 //LED PA5
 //Button PC13
@@ -21,13 +23,31 @@ void GPIO_Conf(void);
 void delay(void);
 
 
+
+
 /*
  * START PROGRAM
  */
 int main(){
 
-	while(1){
+<<<<<<< HEAD
+	SysTickInit();
+	GPIO_Conf();
 
+
+	while(1)
+	{
+		GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
+		delay_ms(1000);
+=======
+>>>>>>> 7bfe1162eb0f6d92f05b504ea2a5711bb406f19e
+
+	GPIO_Conf();
+
+	while(1)
+	{
+
+		delay();
 	}
 
 	return 0;
@@ -38,18 +58,26 @@ int main(){
  * EXTI Handler
  */
 void EXTI15_10_IRQHandler(void){
-	GPIO_IRQHandling(GPIO_PIN_13);
+	GPIO_Clear_Interrupt(GPIO_PIN_13);
 
-	GPIO_WriteToOutputPin(GPIOA,GPIO_PIN_5,SET);
+	GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
+<<<<<<< HEAD
+	delay_ms(100);
+=======
+	delay();
+>>>>>>> 7bfe1162eb0f6d92f05b504ea2a5711bb406f19e
 
 }
 
 void GPIO_Conf(void){
+
+
 	GPIO_Handle_t _GPIOA, _GPIOC;
 
 	/*
 	 * Configure LED
 	 */
+
 	_GPIOA.pGPIOX = GPIOA;
 	_GPIOA.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_5;
 	_GPIOA.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_OUT;
@@ -80,8 +108,3 @@ void GPIO_Conf(void){
 
 }
 
-
-void delay(void){
-
-	for (volatile uint32_t i = 0; i < 500000; i++);
-}
