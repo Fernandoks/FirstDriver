@@ -34,11 +34,10 @@ void SysTickInit (void)
 	{
 		//clock = ( ((pRCC->CR) & (0xFF << 8U) ) >> 8U ) ; //bit 8 to 15 are HSI cal//HSI
 		clock = 16000000; //bit 8 to 15 are HSI cal//HSI
-
 	}
 
 	//set systick counter to interrupt each ms
-	*SYST_RVR = ((clock/100)-1);
+	*SYST_RVR = ((clock/(1000*2))-1);
 
 
 
