@@ -117,6 +117,7 @@ void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t EnableDisable); /* First 
  */
 void SPI_Init(SPI_Handle_t *pSPIHandle);
 void SPI_DeInit(SPI_RegDef_t *pSPIx);
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable);
 
 /*
  * Data send and Receive
@@ -131,6 +132,10 @@ void SPI_IRQInterruptConfig(IRQn_Type IRQNumber, uint8_t EnableDisable);
 void SPI_IRQPriorityConfig(IRQn_Type IRQNumber, uint8_t IRQPriority);
 void SPI_IRQHandling(SPI_Handle_t *pSPIHandle);
 
+/*
+ * Other Configuration
+ */
+void SPI_Config_SSI(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable);
 
 
 #endif /* INC_STM32F446XX_SPI_DRIVER_H_ */

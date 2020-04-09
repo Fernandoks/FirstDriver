@@ -95,6 +95,8 @@ void __sizeof(void)
 
 void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
 
+	GPIO_PeriClockControl(pGPIOHandle->pGPIOX, ENABLE);
+
 
 	uint32_t temp = 0;
 	//Configure the mode
@@ -250,10 +252,10 @@ uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx){
 void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value){
 
 	if (Value == GPIO_PIN_SET){
-		pGPIOx->ODR |= (1 << PinNumber);
+		pGPIOx->BSSR |= (1 << PinNumber);
 	}
 	else{
-		pGPIOx->ODR &= ~(1 << PinNumber);
+		pGPIOx->BSSR |= (1 << (PinNumber + 0x10));
 	}
 
 }
@@ -269,7 +271,7 @@ void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Val
  */
 void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value){
 
-	pGPIOx->ODR = Value;
+	pGPIOx->BSSR = Value;
 }
 
 
@@ -283,7 +285,15 @@ void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value){
  */
 void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber){
 
-	pGPIOx->ODR ^= (1 << PinNumber);
+	if (GPIO_ReadFromInputPin(pGPIOx, PinNumber) == SET )
+	{
+		GPIO_WriteToOutputPin(pGPIOx,PinNumber,GPIO_PIN_RESET);
+	}
+	else
+	{
+		GPIO_WriteToOutputPin(pGPIOx,PinNumber,GPIO_PIN_SET);
+	}
+
 }
 
 /*

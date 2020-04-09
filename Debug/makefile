@@ -40,13 +40,8 @@ FirstDriver-1.bin \
 all: FirstDriver-1.elf secondary-outputs
 
 # Tool invocations
-<<<<<<< HEAD
 FirstDriver-1.elf: $(OBJS) $(USER_OBJS) /home/fernandoks/Desktop/CubeWorkbench/FirstDriver-1/LinkerScript.ld
 	arm-none-eabi-gcc -o "FirstDriver-1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/fernandoks/Desktop/CubeWorkbench/FirstDriver-1/LinkerScript.ld" --specs=nosys.specs -Wl,-Map="FirstDriver-1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-=======
-FirstDriver.elf: $(OBJS) $(USER_OBJS) /home/fernandoks/Desktop/CubeWorkbench/FirstDriver/LinkerScript.ld
-	arm-none-eabi-gcc -o "FirstDriver.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/fernandoks/Desktop/CubeWorkbench/FirstDriver/LinkerScript.ld" --specs=nosys.specs -Wl,-Map="FirstDriver.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
->>>>>>> 7bfe1162eb0f6d92f05b504ea2a5711bb406f19e
 	@echo 'Finished building target: $@'
 	@echo ' '
 

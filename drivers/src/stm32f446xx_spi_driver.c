@@ -132,6 +132,10 @@ void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t EnableDisable)
 
 void SPI_Init(SPI_Handle_t *pSPIHandle)
 {
+
+	//Clock Enable
+	SPI_PeriClockControl(pSPIHandle->pSPIx,ENABLE);
+
 	uint32_t tempreg = 0;
 
 	//1. Configure the device mode
@@ -174,6 +178,8 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 
 	//Push to register
 	pSPIHandle->pSPIx->CR1 = tempreg;
+
+
 }
 
 /******************************************************************************
@@ -217,6 +223,54 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
 		SPI4_RESET();
 	}
 }
+
+
+/******************************************************************************
+* Function : SPI_PeripheralControl()
+*//**
+* \b Description:
+*
+* This function is used to Enable or Disable the SPI Peripheral
+*
+* PRE-CONDITION: Call with a valid SPI_Handle_t, correctly filled.
+*
+* POST-CONDITION: TBD
+*
+* @return 		VOID
+*
+*
+* @see SPI_PeripheralControl
+
+*******************************************************************************/
+
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
+{
+	if (EnableDisable == ENABLE)
+	{
+		pSPIRegDef->CR1 |= (1 << SPI_CR1_SPE);
+	}
+	else
+	{
+		pSPIRegDef->CR1 &= ~(1 << SPI_CR1_SPE);
+	}
+
+}
+
+void SPI_Config_SSI(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
+{
+	if (EnableDisable == ENABLE)
+	{
+		pSPIRegDef->CR1 |= (1 << SPI_CR1_SSI);
+	}
+	else
+	{
+		pSPIRegDef->CR1 &= ~(1 << SPI_CR1_SSI);
+	}
+
+}
+
+
+
 
 /*
  * FLAG Status
@@ -263,7 +317,7 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTXBuffer, uint32_t Lenght)
 }
 
 /*
- * Receive data from SPI
+ * Receive data from SPI- Blocking mode
  */
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRXBuffer, uint32_t Lenght)
 {
