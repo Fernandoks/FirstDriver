@@ -12,7 +12,7 @@
 
 /* GPIO_PIN_CONF_TypeDef */
 typedef struct{
-	uint8_t GPIO_Pin_Number;
+	uint8_t GPIO_Pin_Number; /* bitwise it can take multiple pin numbers */
 	uint8_t GPIO_Mode;
 	uint8_t GPIO_Type;
 	uint8_t GPIO_Speed;
@@ -64,5 +64,21 @@ typedef struct{
 #define GPIO_PUPD_PU		1
 #define GPIO_PUPD_PD		2
 #define GPIO_PUPD_RESERVED	3
+
+/************** GPIO ACTIONS *********************/
+
+/* Peripheral Clock Control */
+void GPIO_PCLK(GPIO_RegDef_t* pGPIO, uint8_t status);
+
+/* GPIO Initialization */
+void GPIO_Initialize(GPIO_Handler_TypedDef* pGPIO_Handler);
+void GPIO_DeInitialize(GPIO_RegDef_t* pGPIO); /* with the GPIO regdef we can use the GPIO_RESET function */
+
+/* GPIO PIN management */
+uint8_t GPIO_ReadInputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber); /* we don't use the handler because it might contain more than one pin number */
+uint8_t GPIO_ReadInputPORT(GPIO_RegDef_t* pGPIO);
+void GPIO_WriteOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber, uint8_t value);
+void GPIO_WriteOutputPORT(GPIO_RegDef_t* pGPIO, uint16_t value);
+void GPIO_ToggleOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber);
 
 #endif /* INC_STM32F446XX_GPIO_DRIVER_COURSE_H_ */

@@ -14,6 +14,8 @@
 #define __vo 						volatile
 #define ENABLE 						1
 #define DISABLE						0
+#define PIN_SET_ENABLE 				1
+#define PIN_SET_DISABLE				0
 
 /* Internal peripherals */
 #define INTERNALPERIPH_BASEADDRESS	0xE0000000U

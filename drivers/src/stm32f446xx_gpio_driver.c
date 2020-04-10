@@ -153,7 +153,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
 	temp = 0;
 
 	// configure output type
-	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType) << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);;
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType) << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
 	pGPIOHandle->pGPIOX->OTYPER  &= ~(1ul << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //Clearing
 	pGPIOHandle->pGPIOX->OTYPER |= temp;
 	temp = 0;
