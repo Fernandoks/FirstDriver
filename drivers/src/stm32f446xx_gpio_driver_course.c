@@ -13,66 +13,72 @@ void GPIO_PCLK(GPIO_RegDef_t* pGPIO, uint8_t status)
 {
 	if(status == ENABLE)
 	{
-		switch(pGPIO)
+		if(pGPIO == GPIOA)//can't do switch on a pointer
 		{
-		case GPIOA:
 			GPIOA_PCLK_EN();
-			break;
-		case GPIOB:
+		}
+		else if(pGPIO == GPIOB)
+		{
 			GPIOB_PCLK_EN();
-			break;
-		case GPIOC:
+		}
+		else if(pGPIO == GPIOC)
+		{
 			GPIOC_PCLK_EN();
-			break;
-		case GPIOD:
+		}
+		else if(pGPIO == GPIOD)
+		{
 			GPIOD_PCLK_EN();
-			break;
-		case GPIOE:
+		}
+		else if(pGPIO == GPIOE)
+		{
 			GPIOE_PCLK_EN();
-			break;
-		case GPIOF:
+		}
+		else if(pGPIO == GPIOF)
+		{
 			GPIOF_PCLK_EN();
-			break;
-		case GPIOG:
+		}
+		else if(pGPIO == GPIOG)
+		{
 			GPIOG_PCLK_EN();
-			break;
-		case GPIOH:
+		}
+		else if(pGPIO == GPIOH)
+		{
 			GPIOH_PCLK_EN();
-			break;
-		default:
-			break;
 		}
 	}
 	else if(status == DISABLE)
 	{
-		switch(pGPIO)
+		if(pGPIO == GPIOA)//can't do switch on a pointer
 		{
-		case GPIOA:
-			GPIOA_PCLK_EN();
-			break;
-		case GPIOB:
-			GPIOB_PCLK_EN();
-			break;
-		case GPIOC:
-			GPIOC_PCLK_EN();
-			break;
-		case GPIOD:
-			GPIOD_PCLK_EN();
-			break;
-		case GPIOE:
-			GPIOE_PCLK_EN();
-			break;
-		case GPIOF:
-			GPIOF_PCLK_EN();
-			break;
-		case GPIOG:
-			GPIOG_PCLK_EN();
-			break;
-		case GPIOH:
-			GPIOH_PCLK_EN();
-			break;
-		default:
-			break;
+			GPIOA_PCLK_DI();
+		}
+		else if(pGPIO == GPIOB)
+		{
+			GPIOB_PCLK_DI();
+		}
+		else if(pGPIO == GPIOC)
+		{
+			GPIOC_PCLK_DI();
+		}
+		else if(pGPIO == GPIOD)
+		{
+			GPIOD_PCLK_DI();
+		}
+		else if(pGPIO == GPIOE)
+		{
+			GPIOE_PCLK_DI();
+		}
+		else if(pGPIO == GPIOF)
+		{
+			GPIOF_PCLK_DI();
+		}
+		else if(pGPIO == GPIOG)
+		{
+			GPIOG_PCLK_DI();
+		}
+		else if(pGPIO == GPIOH)
+		{
+			GPIOH_PCLK_DI();
 		}
 	}
 }
@@ -80,13 +86,12 @@ void GPIO_PCLK(GPIO_RegDef_t* pGPIO, uint8_t status)
 /* GPIO Initialization */
 void GPIO_Initialize(GPIO_Handler_TypedDef* pGPIO_Handler)
 {
-	uint32_t temp = 0;
+	uint32_t temp = 0;//
 	//Configure the mode
 	//First, check if interrupt mode selected, if not do this
 	if(pGPIO_Handler->GPIO_Pin_Config.GPIO_Mode <= GPIO_MODE_ANALOG)
 	{
 		pGPIO_Handler->pGPIO->MODER |= ((pGPIO_Handler->GPIO_Pin_Config.GPIO_Mode) << (2*pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number));
-		pGPIOHandle->pGPIOX->MODER |= temp; //Pourquoi OR 0?
 	}
 	else //Configure everything for each interrupt mode
 	{
@@ -112,14 +117,14 @@ void GPIO_Initialize(GPIO_Handler_TypedDef* pGPIO_Handler)
 	{
 		if(pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number <= 7)
 		{
-			temp = (pGPIO_Handler->GPIO_Pin_Config.GPIO_Speed << (4*pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number));
+			temp = (pGPIO_Handler->GPIO_Pin_Config.GPIO_AlternateMode << (4*pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number));
 			pGPIO_Handler->pGPIO->AFRL &= ~(15ul << (4*pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number));//clear the requested port bits
 			pGPIO_Handler->pGPIO->AFRL |= temp;
 			temp = 0;
 		}
-		else
+		else if(pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number > 7)
 		{
-			temp = (pGPIO_Handler->GPIO_Pin_Config.GPIO_Speed << (4*pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number));
+			temp = (pGPIO_Handler->GPIO_Pin_Config.GPIO_AlternateMode << (4*pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number));
 			pGPIO_Handler->pGPIO->AFRH &= ~(15ul << (4*pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number));//clear the requested port bits
 			pGPIO_Handler->pGPIO->AFRH |= temp;
 			temp = 0;
@@ -130,34 +135,37 @@ void GPIO_Initialize(GPIO_Handler_TypedDef* pGPIO_Handler)
 /* GPIO Deinitialization */
 void GPIO_DeInitialize(GPIO_RegDef_t* pGPIO)
 {
-	switch(pGPIO)
-	{
-	case GPIOA:
+	if(pGPIO == GPIOA){
 		GPIOA_RESET();
-		break;
-	case GPIOB:
+	}
+	else if(pGPIO == GPIOB)
+	{
 		GPIOB_RESET();
-		break;
-	case GPIOC:
+	}
+	else if(pGPIO == GPIOC)
+	{
 		GPIOC_RESET();
-		break;
-	case GPIOD:
+	}
+	else if(pGPIO == GPIOD)
+	{
 		GPIOD_RESET();
-		break;
-	case GPIOE:
+	}
+	else if(pGPIO == GPIOE)
+	{
 		GPIOE_RESET();
-		break;
-	case GPIOF:
+	}
+	else if(pGPIO == GPIOF)
+	{
 		GPIOF_RESET();
-		break;
-	case GPIOG:
+	}
+	else if(pGPIO == GPIOG)
+	{
 		GPIOG_RESET();
-		break;
-	case GPIOH:
+	}
+	else if(pGPIO == GPIOH)
+	{
 		GPIOH_RESET();
-		break;
-	default:
-		break;
+	}
 }
 
 /* GPIO Read Input PIN */
@@ -175,24 +183,33 @@ uint16_t GPIO_ReadInputPORT(GPIO_RegDef_t* pGPIO)
 /* GPIO Write Output PIN */
 void GPIO_WriteOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber, uint8_t value)
 {
-	if(value == GPIO_PIN_ENABLE)
+	if(value == PIN_SET_ENABLE)
 	{
-		pGPIO->ODR |= (1 << PinNumber);
+		pGPIO->BSRR |= (1 << PinNumber);
 	}
-	else if(value == GPIO_PIN_DISABLE)
+	else if(value == PIN_SET_DISABLE)
 	{
-		pGPIO->ODR &= ~(1 << PinNumber);
+		pGPIO->BSRR |= (1 << (PinNumber + 16));
 	}
 }
 
 /* GPIO Write Output Port */
 void GPIO_WriteOutputPORT(GPIO_RegDef_t* pGPIO, uint16_t value)
 {
-	pGPIO->ODR = value;
+	pGPIO->BSRR |= value; //set the requested BS bits to 1
 }
 
 /* GPIO Toogle Output PIN */
 void GPIO_ToggleOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber)
 {
-	pGPIO->ODR ^= (0x00000001 << PinNumber);
+	uint32_t temp;
+	temp = (pGPIO->ODR >> PinNumber) & 0x00000001;
+	if(temp == 0x00000001)
+	{
+		pGPIO->BSRR |= (0x00000001 << (PinNumber + 16));
+	}
+	else if(temp == 0x00000000)
+	{
+		pGPIO->BSRR |= (0x00000001 << PinNumber);
+	}
 }
