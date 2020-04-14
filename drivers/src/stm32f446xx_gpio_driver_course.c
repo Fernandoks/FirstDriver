@@ -213,3 +213,66 @@ void GPIO_ToggleOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber)
 		pGPIO->BSRR |= (0x00000001 << PinNumber);
 	}
 }
+
+/* Interrupt actions */
+
+void GPIO_Config_IRQ(uint8_t IRQNumber, uint8_t EnableDisable)
+{
+	if(EnableDisable == ENABLE)
+	{
+		if(IRQNumber < 32)
+		{
+		*NVIC_ISER0 |= (1 << IRQNumber);
+		}
+		else if((IRQNumber >= 32) && (IRQNumber < 64))
+		{
+			*NVIC_ISER1 |= (1 << IRQNumber);
+
+		}
+		else if((IRQNumber >= 64) && (IRQNumber < 96))
+		{
+			*NVIC_ISER2 |= (1 << IRQNumber);
+		}
+		else if((IRQNumber >= 96) && (IRQNumber < 128))
+		{
+			*NVIC_ISER3 |= (1 << IRQNumber);
+		}
+	}
+	else if(EnableDisable == DISABLE)
+	{
+		if(IRQNumber < 32)
+		{
+		*NVIC_ICER0 |= (1 << IRQNumber);
+		}
+		else if((IRQNumber >= 32) && (IRQNumber < 64))
+		{
+			*NVIC_ICER1 |= (1 << IRQNumber);
+
+		}
+		else if((IRQNumber >= 64) && (IRQNumber < 96))
+		{
+			*NVIC_ICER2 |= (1 << IRQNumber);
+		}
+		else if((IRQNumber >= 96) && (IRQNumber < 128))
+		{
+			*NVIC_ICER3 |= (1 << IRQNumber);
+		}
+	}
+}
+
+void GPIO_Clear_IRQ(uint8_t PinNumber)
+{
+	if((EXTI->PR & (1 << PinNumber)) != 0){ //check if the PR bit is already selected and reset it
+		EXTI->PR |= (1 << PinNumber);
+	}
+}
+
+void GPIO_Config_Priority_IRQ(uint8_t IRQNumber, uint8_t IRQ_Priority)
+{
+	uint8_t IPRNumber = IRQNumber/4; //1 register = 4 interrupt
+
+	uint8_t PRIField = IRQNumber%4; //8-bit field for each interrupt
+
+	uint8_t shift = (8*PRIField) + (8-PRI_BITS_IMPLEMENTED);
+	*(NVIC_IPR_BASEADDRESS + (IPRNumber*4)) = (IRQ_Priority << shift);
+}

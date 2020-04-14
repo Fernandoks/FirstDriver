@@ -82,4 +82,8 @@ void GPIO_WriteOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber, uint8_t value)
 void GPIO_WriteOutputPORT(GPIO_RegDef_t* pGPIO, uint16_t value);
 void GPIO_ToggleOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber);
 
+void GPIO_Config_IRQ(uint8_t IRQNumber, uint8_t EnableDisable);
+void GPIO_Clear_IRQ(uint8_t PinNumber);
+void GPIO_Config_Priority_IRQ(uint8_t IRQNumber, uint8_t IRQ_Priority);
+
 #endif /* INC_STM32F446XX_GPIO_DRIVER_COURSE_H_ */
