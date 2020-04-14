@@ -5,6 +5,8 @@
  *      Author: quentin
  */
 
+#ifdef QUENTIN
+
 #ifndef INC_STM32F446XX_GPIO_DRIVER_COURSE_H_
 #define INC_STM32F446XX_GPIO_DRIVER_COURSE_H_
 
@@ -82,3 +84,7 @@ void GPIO_WriteOutputPORT(GPIO_RegDef_t* pGPIO, uint16_t value);
 void GPIO_ToggleOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber);
 
 #endif /* INC_STM32F446XX_GPIO_DRIVER_COURSE_H_ */
+
+
+#endif /*QUENTIN*/
+

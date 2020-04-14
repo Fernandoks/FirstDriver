@@ -103,7 +103,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
 	//This first line tests if this is a interruption mode
 	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG)
 	{
-		pGPIOHandle->pGPIOX->MODER |= ( (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode )<< (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); // Moder uses 2 bit for each position
+		temp |= ( (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode )<< (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); // Moder uses 2 bit for each position
 		pGPIOHandle->pGPIOX->MODER |= temp;
 	}
 	else
@@ -142,13 +142,13 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
 
 	//Configure speed
 	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-	pGPIOHandle->pGPIOX->OSPEEDER &= ~(3ul << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //Clearing
+	pGPIOHandle->pGPIOX->OSPEEDER &= ~(3ul << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //Clearing
 	pGPIOHandle->pGPIOX->OSPEEDER |= temp; //setting
 	temp = 0;
 
 	//configure PuPd
 	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinPuPdControl << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-	pGPIOHandle->pGPIOX->PUPDR &= ~(3ul << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //Clearing
+	pGPIOHandle->pGPIOX->PUPDR &= ~(3ul << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //Clearing
 	pGPIOHandle->pGPIOX->PUPDR |= temp;
 	temp = 0;
 
@@ -161,13 +161,13 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
 	//alternate function
 	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_ALTFN){
 		if (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber < GPIO_PIN_8){
-			temp = ( pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << ( 4 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-			pGPIOHandle->pGPIOX->AFRL &= ~(15ul << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+			temp = ( pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << ( 4 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+			pGPIOHandle->pGPIOX->AFRL &= ~(15ul << ( 4 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
 			pGPIOHandle->pGPIOX->AFRL |= temp;
 		}
 		else{
-			temp = ( pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << ( 4 * (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber - 8)));
-			pGPIOHandle->pGPIOX->AFRH &= ~(15ul << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+			temp = ( pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << ( 4 * (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber - 8)));
+			pGPIOHandle->pGPIOX->AFRH &= ~(15ul << ( 4 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
 			pGPIOHandle->pGPIOX->AFRH |= temp;
 		}
 		temp = 0;

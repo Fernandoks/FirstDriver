@@ -4,6 +4,8 @@
  *  Created on: Apr 8, 2020
  *      Author: quentin
  */
+#ifdef QUENTIN
+
 
 #include "stm32f446xx_gpio_driver_course.h"
 
@@ -13,6 +15,7 @@ void GPIO_PCLK(GPIO_RegDef_t* pGPIO, uint8_t status)
 {
 	if(status == ENABLE)
 	{
+
 		switch(pGPIO)
 		{
 		case GPIOA:
@@ -112,7 +115,7 @@ void GPIO_Initialize(GPIO_Handler_TypedDef* pGPIO_Handler)
 	{
 		if(pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number <= 7)
 		{
-			temp = (pGPIO_Handler->GPIO_Pin_Config.GPIO_Speed << (4*pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number));
+			temp = (pGPIO_Handler->GPIO_Pin_Config.GPIO_ << (4*pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number));
 			pGPIO_Handler->pGPIO->AFRL &= ~(15ul << (4*pGPIO_Handler->GPIO_Pin_Config.GPIO_Pin_Number));//clear the requested port bits
 			pGPIO_Handler->pGPIO->AFRL |= temp;
 			temp = 0;
@@ -196,3 +199,5 @@ void GPIO_ToggleOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber)
 {
 	pGPIO->ODR ^= (0x00000001 << PinNumber);
 }
+
+#endif /*QUENTIN*/

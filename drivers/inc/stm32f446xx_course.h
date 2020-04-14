@@ -4,6 +4,7 @@
  *  Created on: Apr 5, 2020
  *      Author: quentin
  */
+#ifdef QUENTIN
 
 #ifndef STM32F446XX_COURSE_H_
 #define STM32F446XX_COURSE_H_
@@ -313,3 +314,5 @@ typedef struct{
 #define USART6_PCLK_EN()		( RCC->APB2ENR |= (1 << 5)	)
 
 #endif /* STM32F446RE_H_ */
+
+#endif /*QUENTIN*/

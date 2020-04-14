@@ -22,7 +22,10 @@ void SysTickInit (void)
 	temp |= (1ul << 1U); // 1 for internal clock, 0 for external
 	*SYST_CSR |= temp;
 
-	//get Clock
+	/*
+	 * Get Clock - Systick receives (SYSClock*AHBPrescaler)/8
+	 */
+
 
 	RCC_RegDef_t* pRCC = RCC;
 
@@ -33,11 +36,11 @@ void SysTickInit (void)
 	else
 	{
 		//clock = ( ((pRCC->CR) & (0xFF << 8U) ) >> 8U ) ; //bit 8 to 15 are HSI cal//HSI
-		clock = 16000000; //bit 8 to 15 are HSI cal//HSI
+		clock = (16000000/8); //bit 8 to 15 are HSI cal//HSI
 	}
 
 	//set systick counter to interrupt each ms
-	*SYST_RVR = ((clock/(1000*2))-1);
+	*SYST_RVR = ((clock/(1000))-1);
 
 
 

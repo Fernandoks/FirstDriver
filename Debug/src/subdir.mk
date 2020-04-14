@@ -18,20 +18,7 @@ C_DEPS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 src/main.o: ../src/main.c
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32 -DSTM32F4 -DSTM32F446RETx -DNUCLEO_F446RE -DDEBUG -c -I"/home/quentin/STM32CubeIDE/dev/FirstDriver/drivers/inc" -O0 -ffunction-sections -Wall -fstack-usage -MMD -MP -MF"src/main.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
-=======
-<<<<<<< HEAD
->>>>>>> master
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32 -DSTM32F4 -DSTM32F446RETx -DNUCLEO_F446RE -DDEBUG -c -I"/home/fernandoks/Desktop/CubeWorkbench/FirstDriver-1/drivers/inc" -O0 -ffunction-sections -Wall -fstack-usage -MMD -MP -MF"src/main.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 src/ourTest.o: ../src/ourTest.c
-<<<<<<< HEAD
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32 -DSTM32F4 -DSTM32F446RETx -DNUCLEO_F446RE -DDEBUG -c -I"/home/fernandoks/Desktop/CubeWorkbench/FirstDriver-1/drivers/inc" -O0 -ffunction-sections -Wall -fstack-usage -MMD -MP -MF"src/ourTest.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
-=======
-	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32 -DSTM32F4 -DSTM32F446RETx -DNUCLEO_F446RE -DDEBUG -c -I"/home/fernandoks/Desktop/CubeWorkbench/FirstDriver/drivers/inc" -O0 -ffunction-sections -Wall -fstack-usage -MMD -MP -MF"src/ourTest.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
->>>>>>> 7bfe1162eb0f6d92f05b504ea2a5711bb406f19e
->>>>>>> master
->>>>>>> master
 

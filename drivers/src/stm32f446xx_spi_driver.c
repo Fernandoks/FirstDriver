@@ -256,6 +256,24 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
 
 }
 
+/******************************************************************************
+* Function : SPI_Config_SSI()
+*//**
+* \b Description:
+*
+* Enable/Disable the SSI register
+* SSI (Internal slave select), used to force the SSI bit
+*
+* PRE-CONDITION: Call with a valid SPI_Handle_t, correctly filled.
+*
+* POST-CONDITION: TBD
+*
+* @return 		VOID
+*
+*
+* @see SPI_Config_SSI
+
+*******************************************************************************/
 void SPI_Config_SSI(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
 {
 	if (EnableDisable == ENABLE)
@@ -269,6 +287,38 @@ void SPI_Config_SSI(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
 
 }
 
+/******************************************************************************
+* Function : SPI_Config_SSOE()
+*//**
+* \b Description:
+*
+* SS output enable
+* 0: SS output is disabled in master mode and the cell can work in multi master configuration
+* 1: SS output is enabled in master mode and when the cell is enabled. The cell cannot work
+* in a multi master environment.
+*
+* PRE-CONDITION: Call with a valid SPI_Handle_t, correctly filled.
+*
+* POST-CONDITION: TBD
+*
+* @return 		VOID
+*
+*
+* @see SPI_Config_SSOE
+
+*******************************************************************************/
+void SPI_Config_SSOE(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
+{
+	if (EnableDisable == ENABLE)
+	{
+		pSPIRegDef->CR2 |= (1 << SPI_CR2_SSOE);
+	}
+	else
+	{
+		pSPIRegDef->CR2 &= ~(1 << SPI_CR2_SSOE);
+	}
+
+}
 
 
 
