@@ -6,4 +6,3 @@
 "src/main.o"
 "src/ourTest.o"
 "startup/startup_stm32.o"
-"startup/sysmem.o"

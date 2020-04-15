@@ -30,9 +30,6 @@ local.properties
 # Locally stored "Eclipse launch configurations"
 *.launch
 
-# CDT-specific
-.cproject
-
 # PDT-specific
 .buildpath
 
@@ -71,6 +68,10 @@ local.properties
 .cproject
 .project
 .settings/
+
+#Debug
+Debug/
+Debug.*
 
 # Vagrant directory
 .vagrant/

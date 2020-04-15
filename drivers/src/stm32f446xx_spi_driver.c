@@ -371,7 +371,28 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTXBuffer, uint32_t Lenght)
  */
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRXBuffer, uint32_t Lenght)
 {
+	while (Lenght > 0)
+	{
+		//while( !( pSPIx->SR & (1 << SPI_SR_TXE) ) )  //This tests if the bit position is set
+		while( SPI_GetFlagStatus(pSPIx, SPI_RXNE_FLAG) == FLAG_RESET );
 
+		//Verify the Frame format (8bits or 16 bits) using the CR1_DFF
+		if ( (pSPIx->CR1 & (1 << SPI_CR1_DFF) ) == 1)
+		{
+			//16bits
+			*((uint16_t*)pRXBuffer) = pSPIx->DR;
+			Lenght--;
+			(uint16_t*)pRXBuffer++;
+
+		}
+		else
+		{
+			//8bits
+			*((uint16_t*)pRXBuffer) = pSPIx->DR;
+			pRXBuffer++;
+		}
+		Lenght--;
+	}
 
 }
 

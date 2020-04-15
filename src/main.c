@@ -11,6 +11,7 @@
  */
 
 #include <string.h>
+#include <stdio.h>
 
 #include "stm32f446xx_gpio_driver.h"
 #include "stm32f446xx_spi_driver.h"
@@ -19,13 +20,24 @@
 //LED PA5
 //Button PC13
 
-#define ARDUINO_SPI		SPI1
-#define SPI1_PORT		GPIOA
-#define SPI1_MOSI_PIN	GPIO_PIN_7
-#define SPI1_MISO_PIN	GPIO_PIN_6
-#define SPI1_SCLK_PIN	GPIO_PIN_5
-#define SPI1_NSS_PIN	GPIO_PIN_4
+#define NACK 					0xA5
+#define ACK 					0xF5
 
+//command codes
+#define COMMAND_LED_CTRL        0x50
+#define COMMAND_SENSOR_READ     0x51
+#define COMMAND_LED_READ        0x52
+#define COMMAND_PRINT           0x53
+#define COMMAND_ID_READ         0x54
+
+#define ARDUINO_SPI				SPI1
+#define SPI1_PORT				GPIOA
+#define SPI1_MOSI_PIN			GPIO_PIN_7
+#define SPI1_MISO_PIN			GPIO_PIN_6
+#define SPI1_SCLK_PIN			GPIO_PIN_5
+#define SPI1_NSS_PIN			GPIO_PIN_4
+
+#define DUMMY_BYTE				0xFF
 
 
 /*
@@ -35,14 +47,20 @@ void GPIO_Conf(void);
 void delay(void);
 void SPI_Conf(void);
 
+extern void initialise_monitor_handles();
 
-uint8_t testdata[] = "Hello, World!";
+
+uint8_t* TxData = "Hello, World!";
+uint8_t* RxData[100];
 
 /*
  * START PROGRAM
  */
 int main()
 {
+	initialise_monitor_handles();
+
+	printf("Program starting\n");
 
 	SysTickInit();
 	GPIO_Conf();
@@ -63,14 +81,34 @@ int main()
  * EXTI Handler
  */
 void EXTI15_10_IRQHandler(void){
+	uint8_t CMDCode = COMMAND_LED_CTRL;
+	uint8_t Ack_byte = 0;
+	uint8_t Dummy_Read = 0;
+	uint8_t Dummy_Write = 0;
+	uint8_t args[2] = {0};
+
 	GPIO_Clear_Interrupt(GPIO_PIN_13);
 
 	SPI_PeripheralControl(ARDUINO_SPI, ENABLE);
 
-	uint8_t Length = strlen(&testdata);
-	SPI_SendData(ARDUINO_SPI, &Length, 1);
+	//Send the command
+	SPI_SendData(ARDUINO_SPI, &CMDCode, 1);
+	printf("SPI SEND: %c",(int)CMDCode);
+	//Dummy read to clean
+	SPI_ReceiveData(ARDUINO_SPI, &Dummy_Read, 1);
+	printf("SPI Receive: %c",(int)Dummy_Read);
+	//Send the Dummy byte to shift
+	SPI_SendData(ARDUINO_SPI, Dummy_Write, 1);
+	printf("SPI SEND: %c",(int)Dummy_Write);
+	//get the ACK
+	SPI_ReceiveData(ARDUINO_SPI, &Ack_byte, 1);
+	if ( Ack_byte == ACK)
+	{
+		args[0] = 9;
+		args[1] = 1;
+		SPI_SendData(ARDUINO_SPI, &args, (uint32_t)strlen(args));
+	}
 
-	SPI_SendData(ARDUINO_SPI, testdata, (uint32_t)strlen(testdata));
 
 	while(SPI_GetFlagStatus(ARDUINO_SPI, SPI_BSY_FLAG) );
 	SPI_PeripheralControl(ARDUINO_SPI, DISABLE);
@@ -133,8 +171,8 @@ void SPI_Conf(void)
 	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST;
 
 	//MISO
-	//_SPIO1_PINS.GPIO_PinConfig.GPIO_PinNumber = SPI1_MISO_PIN;
-	//GPIO_Init(&_SPIO1_PINS);
+	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinNumber = SPI1_MISO_PIN;
+	GPIO_Init(&_SPIO1_PINS);
 	//SCLK
 	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinNumber = SPI1_SCLK_PIN;
 	GPIO_Init(&_SPIO1_PINS);
