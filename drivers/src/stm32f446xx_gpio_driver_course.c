@@ -4,6 +4,7 @@
  *  Created on: Apr 8, 2020
  *      Author: quentin
  */
+#define QUENTIN
 #ifdef QUENTIN
 
 
@@ -278,3 +279,6 @@ void GPIO_Config_Priority_IRQ(uint8_t IRQNumber, uint8_t IRQ_Priority)
 	uint8_t shift = (8*PRIField) + (8-PRI_BITS_IMPLEMENTED);
 	*(NVIC_IPR_BASEADDRESS + (IPRNumber*4)) = (IRQ_Priority << shift);
 }
+
+
+#endif /*QUENTIN*/

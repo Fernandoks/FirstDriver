@@ -6,7 +6,7 @@
  */
 
 #include "stm32f446xx_gpio_driver.h"
-
+#include <assert.h>
 
 /*
  * Peripheral clock
@@ -94,6 +94,13 @@ void __sizeof(void)
 
 
 void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
+
+	assert(IS_GPIO_PORT(pGPIOHandle->pGPIOX));
+
+	assert(IS_GPIO_PIN(pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+	assert(IS_GPIO_MODE(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode));
+	assert(IS_GPIO_SPEED(pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed));
+	assert(IS_GPIO_PULL(pGPIOHandle->GPIO_PinConfig.GPIO_PinPuPdControl));
 
 	GPIO_PeriClockControl(pGPIOHandle->pGPIOX, ENABLE);
 
