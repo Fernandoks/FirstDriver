@@ -10,44 +10,49 @@
  * Includes
  */
 
+#include <string.h>
+
 #include "stm32f446xx_gpio_driver.h"
+#include "stm32f446xx_spi_driver.h"
 #include "stm32f446xx_delay.h"
 
 //LED PA5
 //Button PC13
+
+#define ARDUINO_SPI		SPI1
+#define SPI1_PORT		GPIOA
+#define SPI1_MOSI_PIN	GPIO_PIN_7
+#define SPI1_MISO_PIN	GPIO_PIN_6
+#define SPI1_SCLK_PIN	GPIO_PIN_5
+#define SPI1_NSS_PIN	GPIO_PIN_4
+
+
 
 /*
  * Functions declarations
  */
 void GPIO_Conf(void);
 void delay(void);
+void SPI_Conf(void);
 
 
-
+uint8_t testdata[] = "Hello, World!";
 
 /*
  * START PROGRAM
  */
-int main(){
+int main()
+{
 
-<<<<<<< HEAD
 	SysTickInit();
 	GPIO_Conf();
+	SPI_Conf();
 
 
 	while(1)
 	{
-		GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
-		delay_ms(1000);
-=======
->>>>>>> 7bfe1162eb0f6d92f05b504ea2a5711bb406f19e
-
-	GPIO_Conf();
-
-	while(1)
-	{
-
-		delay();
+		//GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
+		delay_ms(100);
 	}
 
 	return 0;
@@ -60,22 +65,123 @@ int main(){
 void EXTI15_10_IRQHandler(void){
 	GPIO_Clear_Interrupt(GPIO_PIN_13);
 
-	GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
-<<<<<<< HEAD
-	delay_ms(100);
-=======
-	delay();
->>>>>>> 7bfe1162eb0f6d92f05b504ea2a5711bb406f19e
+	SPI_PeripheralControl(ARDUINO_SPI, ENABLE);
+
+	uint8_t Length = strlen(&testdata);
+	SPI_SendData(ARDUINO_SPI, &Length, 1);
+
+	SPI_SendData(ARDUINO_SPI, testdata, (uint32_t)strlen(testdata));
+
+	while(SPI_GetFlagStatus(ARDUINO_SPI, SPI_BSY_FLAG) );
+	SPI_PeripheralControl(ARDUINO_SPI, DISABLE);
 
 }
 
-void GPIO_Conf(void){
-
-
-	GPIO_Handle_t _GPIOA, _GPIOC;
+void SPI_Conf(void)
+{
+	/*
+	 * SPI has 4 wires
+	 * MOSI - Master output Slave Input
+	 * MISO - Master Input Slave Output
+	 * SCLK - Serial Clock
+	 * NSS  - Select
+	 * To find the correct pins to map, you need to verify the available alternate
+	 *  functions in the Datasheet
+	 *  SPI1
+	 *  PA6 - AF5 - SPI1_MISO
+	 *  PA7 - AF5 - SPI1_MOSI
+	 *  PA5 - AF5 - SPI1_SCK
+	 *  PA4 - AF5 - SPI1_NSS
+	 *  SPI2
+	 *  PB14 or PC2 - AF5 - SPI2_MISO
+	 *  PB15 or PC3 - AF5 - SPI2_MOSI
+	 *  PB13 or PC7 - AF5 - SPI2_SCK
+	 *  PB12 or PB9 - AF5 - SPI2_NSS
+	 */
 
 	/*
+	 * TESTING WITH ARDUINO BOAD
+	 * F446 master
+	 *	DFF = 0
+	 *	SCLK = 2MHz?
+	 *	Arduino Slave
+	 *	PB5 - D13 - SCK
+	 *	PB4 - D12 - MISO
+	 *	PB3 - D11 - MOSI
+	 *	PB2 - D10 - SS
+	 *
+	 *	Connection Scheme
+	 *	SPI	- 	F446	-	Arduino Nano
+	 *	MISO-	PB14	-	D12
+	 *	MOSI-	PB15	-	D11
+	 *	SCLK-	PB13	-	D13
+	 *	SS	-	PB12	-	D10
+	 *
+	 */
+#define SPI
+#ifdef SPI
+
+
+
+
+	GPIO_Handle_t _SPIO1_PINS;
+	_SPIO1_PINS.pGPIOX = SPI1_PORT;
+	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALTFN;
+	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinAltFunMode = GPIO_AF5;
+	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
+	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;
+	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST;
+
+	//MISO
+	//_SPIO1_PINS.GPIO_PinConfig.GPIO_PinNumber = SPI1_MISO_PIN;
+	//GPIO_Init(&_SPIO1_PINS);
+	//SCLK
+	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinNumber = SPI1_SCLK_PIN;
+	GPIO_Init(&_SPIO1_PINS);
+	//MOSI
+	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinNumber = SPI1_MOSI_PIN;
+	GPIO_Init(&_SPIO1_PINS);
+	//NSS
+	_SPIO1_PINS.GPIO_PinConfig.GPIO_PinNumber = SPI1_NSS_PIN;
+	GPIO_Init(&_SPIO1_PINS);
+
+	SPI_Handle_t SPIO1Handle;
+	SPIO1Handle.pSPIx = SPI1;
+	SPIO1Handle.SPIConfig.SPI_BusConfig = SPI_BUSCONFIG_FD;
+	SPIO1Handle.SPIConfig.SPI_DeviceMode = SPI_DEVICE_MODE_MASTER;
+	SPIO1Handle.SPIConfig.SPI_SPI_SclkSpeed = SPI_SCLKSPEED_DIV8;
+	SPIO1Handle.SPIConfig.SPI_DFF = SPI_DFF_8BITS;
+	SPIO1Handle.SPIConfig.SPI_CPHA = SPI_CPHA_LOW;
+	SPIO1Handle.SPIConfig.SPI_CPOL = SPI_CPOL_LOW;
+	SPIO1Handle.SPIConfig.SPI_SSM = SPI_SSM_DISABLE; //Software slave management
+	SPI_Init(&SPIO1Handle);
+
+
+
+	//Put SSI to 1 - used only if you use the Software Slave
+	//SPI_Config_SSI(SPIO1Handle.pSPIx, ENABLE);
+	//Enable the Peripheral
+
+	/*
+	 *When you enable the SSOE in Master Mode the hardware will control the NSS Pin
+	 *The NSS pin will automatically go to 0 when you enable the SPI
+	 */
+	SPI_Config_SSOE(SPI1,ENABLE);
+
+#endif
+
+}
+
+
+
+void GPIO_Conf(void)
+{
+	GPIO_Handle_t _GPIOA, _GPIOC;
+
+#ifndef SPI
+	/*
 	 * Configure LED
+	 * **If SPI is ON PA5 isn't available
 	 */
 
 	_GPIOA.pGPIOX = GPIOA;
@@ -84,9 +190,9 @@ void GPIO_Conf(void){
 	_GPIOA.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_LOW;
 	_GPIOA.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
 	_GPIOA.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
-	GPIO_PeriClockControl(GPIOA, ENABLE);
+	//GPIO_PeriClockControl(GPIOA, ENABLE);
 	GPIO_Init(&_GPIOA);
-
+#endif
 	/*
 	 * Configure Button
 	 */
@@ -96,7 +202,7 @@ void GPIO_Conf(void){
 	_GPIOC.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_LOW;
 	_GPIOC.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
 	_GPIOC.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
-	GPIO_PeriClockControl(GPIOC, ENABLE);
+	//GPIO_PeriClockControl(GPIOC, ENABLE);
 	GPIO_Init(&_GPIOC);
 
 	//Button interrupt

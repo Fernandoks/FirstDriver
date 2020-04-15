@@ -95,13 +95,15 @@ void __sizeof(void)
 
 void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
 
+	GPIO_PeriClockControl(pGPIOHandle->pGPIOX, ENABLE);
+
 
 	uint32_t temp = 0;
 	//Configure the mode
 	//This first line tests if this is a interruption mode
 	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG)
 	{
-		pGPIOHandle->pGPIOX->MODER |= ( (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode )<< (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); // Moder uses 2 bit for each position
+		temp |= ( (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode )<< (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); // Moder uses 2 bit for each position
 		pGPIOHandle->pGPIOX->MODER |= temp;
 	}
 	else
@@ -140,13 +142,13 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
 
 	//Configure speed
 	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-	pGPIOHandle->pGPIOX->OSPEEDER &= ~(3ul << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //Clearing
+	pGPIOHandle->pGPIOX->OSPEEDER &= ~(3ul << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //Clearing
 	pGPIOHandle->pGPIOX->OSPEEDER |= temp; //setting
 	temp = 0;
 
 	//configure PuPd
 	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinPuPdControl << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-	pGPIOHandle->pGPIOX->PUPDR &= ~(3ul << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //Clearing
+	pGPIOHandle->pGPIOX->PUPDR &= ~(3ul << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //Clearing
 	pGPIOHandle->pGPIOX->PUPDR |= temp;
 	temp = 0;
 
@@ -159,13 +161,13 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
 	//alternate function
 	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_ALTFN){
 		if (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber < GPIO_PIN_8){
-			temp = ( pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << ( 4 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
-			pGPIOHandle->pGPIOX->AFRL &= ~(15ul << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+			temp = ( pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << ( 4 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+			pGPIOHandle->pGPIOX->AFRL &= ~(15ul << ( 4 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
 			pGPIOHandle->pGPIOX->AFRL |= temp;
 		}
 		else{
-			temp = ( pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << ( 4 * (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber - 8)));
-			pGPIOHandle->pGPIOX->AFRH &= ~(15ul << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+			temp = ( pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << ( 4 * (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber - 8)));
+			pGPIOHandle->pGPIOX->AFRH &= ~(15ul << ( 4 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
 			pGPIOHandle->pGPIOX->AFRH |= temp;
 		}
 		temp = 0;
@@ -250,10 +252,10 @@ uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx){
 void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value){
 
 	if (Value == GPIO_PIN_SET){
-		pGPIOx->ODR |= (1 << PinNumber);
+		pGPIOx->BSSR |= (1 << PinNumber);
 	}
 	else{
-		pGPIOx->ODR &= ~(1 << PinNumber);
+		pGPIOx->BSSR |= (1 << (PinNumber + 0x10));
 	}
 
 }
@@ -269,7 +271,7 @@ void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Val
  */
 void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value){
 
-	pGPIOx->ODR = Value;
+	pGPIOx->BSSR = Value;
 }
 
 
@@ -283,7 +285,15 @@ void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value){
  */
 void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber){
 
-	pGPIOx->ODR ^= (1 << PinNumber);
+	if (GPIO_ReadFromInputPin(pGPIOx, PinNumber) == SET )
+	{
+		GPIO_WriteToOutputPin(pGPIOx,PinNumber,GPIO_PIN_RESET);
+	}
+	else
+	{
+		GPIO_WriteToOutputPin(pGPIOx,PinNumber,GPIO_PIN_SET);
+	}
+
 }
 
 /*
