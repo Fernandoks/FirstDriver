@@ -5,6 +5,8 @@
  *      Author: quentin
  */
 
+#ifdef QUENTIN
+
 #ifndef INC_STM32F446XX_GPIO_DRIVER_COURSE_H_
 #define INC_STM32F446XX_GPIO_DRIVER_COURSE_H_
 
@@ -87,3 +89,7 @@ void GPIO_Clear_IRQ(uint8_t PinNumber);
 void GPIO_Config_Priority_IRQ(uint8_t IRQNumber, uint8_t IRQ_Priority);
 
 #endif /* INC_STM32F446XX_GPIO_DRIVER_COURSE_H_ */
+
+
+#endif /*QUENTIN*/
+

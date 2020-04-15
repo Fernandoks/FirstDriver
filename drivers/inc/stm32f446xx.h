@@ -378,8 +378,8 @@ typedef struct{
 
 
 #define SPI1					((SPI_RegDef_t*)SPI1_BASEADDRESS)
-#define SPI2					((SPI_RegDef_t*)SPI4_BASEADDRESS)
-#define SPI3					((SPI_RegDef_t*)SPI4_BASEADDRESS)
+#define SPI2					((SPI_RegDef_t*)SPI2_BASEADDRESS)
+#define SPI3					((SPI_RegDef_t*)SPI3_BASEADDRESS)
 #define SPI4					((SPI_RegDef_t*)SPI4_BASEADDRESS)
 
 /*
