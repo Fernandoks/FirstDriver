@@ -93,13 +93,13 @@ void EXTI15_10_IRQHandler(void){
 
 	//Send the command
 	SPI_SendData(ARDUINO_SPI, &CMDCode, 1);
-	printf("SPI SEND: %c",(int)CMDCode);
+	printf("SPI SEND: %d",CMDCode);
 	//Dummy read to clean
 	SPI_ReceiveData(ARDUINO_SPI, &Dummy_Read, 1);
-	printf("SPI Receive: %c",(int)Dummy_Read);
+	printf("SPI Receive: %d",Dummy_Read);
 	//Send the Dummy byte to shift
 	SPI_SendData(ARDUINO_SPI, Dummy_Write, 1);
-	printf("SPI SEND: %c",(int)Dummy_Write);
+	printf("SPI SEND: %d",Dummy_Write);
 	//get the ACK
 	SPI_ReceiveData(ARDUINO_SPI, &Ack_byte, 1);
 	if ( Ack_byte == ACK)

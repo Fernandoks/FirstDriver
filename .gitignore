@@ -71,6 +71,7 @@ local.properties
 
 #Debug
 Debug/
+Debug
 Debug.*
 
 # Vagrant directory

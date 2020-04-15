@@ -1876,7 +1876,7 @@ void EXTI15_10_IRQHandler(void){
  8000d10:	4619      	mov	r1, r3
  8000d12:	4822      	ldr	r0, [pc, #136]	; (8000d9c <EXTI15_10_IRQHandler+0xb8>)
  8000d14:	f7ff ff8b 	bl	8000c2e <SPI_SendData>
-	printf("SPI SEND: %c",(int)CMDCode);
+	printf("SPI SEND: %d",CMDCode);
  8000d18:	79bb      	ldrb	r3, [r7, #6]
  8000d1a:	4619      	mov	r1, r3
  8000d1c:	4820      	ldr	r0, [pc, #128]	; (8000da0 <EXTI15_10_IRQHandler+0xbc>)
@@ -1888,7 +1888,7 @@ void EXTI15_10_IRQHandler(void){
  8000d26:	4619      	mov	r1, r3
  8000d28:	481c      	ldr	r0, [pc, #112]	; (8000d9c <EXTI15_10_IRQHandler+0xb8>)
  8000d2a:	f7ff ffa3 	bl	8000c74 <SPI_ReceiveData>
-	printf("SPI Receive: %c",(int)Dummy_Read);
+	printf("SPI Receive: %d",Dummy_Read);
  8000d2e:	793b      	ldrb	r3, [r7, #4]
  8000d30:	4619      	mov	r1, r3
  8000d32:	481c      	ldr	r0, [pc, #112]	; (8000da4 <EXTI15_10_IRQHandler+0xc0>)
@@ -1900,7 +1900,7 @@ void EXTI15_10_IRQHandler(void){
  8000d3c:	4619      	mov	r1, r3
  8000d3e:	4817      	ldr	r0, [pc, #92]	; (8000d9c <EXTI15_10_IRQHandler+0xb8>)
  8000d40:	f7ff ff75 	bl	8000c2e <SPI_SendData>
-	printf("SPI SEND: %c",(int)Dummy_Write);
+	printf("SPI SEND: %d",Dummy_Write);
  8000d44:	79fb      	ldrb	r3, [r7, #7]
  8000d46:	4619      	mov	r1, r3
  8000d48:	4815      	ldr	r0, [pc, #84]	; (8000da0 <EXTI15_10_IRQHandler+0xbc>)
