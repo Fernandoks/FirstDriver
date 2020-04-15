@@ -19,6 +19,7 @@ typedef struct{
 	uint8_t GPIO_Type;
 	uint8_t GPIO_Speed;
 	uint8_t GPIO_PUPD;
+	uint8_t GPIO_AlternateMode;
 }GPIO_PIN_CONF_TypeDef;
 
 /* GPIO_Handler_TypedDef */
@@ -78,10 +79,14 @@ void GPIO_DeInitialize(GPIO_RegDef_t* pGPIO); /* with the GPIO regdef we can use
 
 /* GPIO PIN management */
 uint8_t GPIO_ReadInputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber); /* we don't use the handler because it might contain more than one pin number */
-uint8_t GPIO_ReadInputPORT(GPIO_RegDef_t* pGPIO);
+uint16_t GPIO_ReadInputPORT(GPIO_RegDef_t* pGPIO);
 void GPIO_WriteOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber, uint8_t value);
 void GPIO_WriteOutputPORT(GPIO_RegDef_t* pGPIO, uint16_t value);
 void GPIO_ToggleOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber);
+
+void GPIO_Config_IRQ(uint8_t IRQNumber, uint8_t EnableDisable);
+void GPIO_Clear_IRQ(uint8_t PinNumber);
+void GPIO_Config_Priority_IRQ(uint8_t IRQNumber, uint8_t IRQ_Priority);
 
 #endif /* INC_STM32F446XX_GPIO_DRIVER_COURSE_H_ */
 

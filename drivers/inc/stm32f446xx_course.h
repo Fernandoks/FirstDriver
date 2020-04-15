@@ -36,6 +36,27 @@
 #define AHB2_BASEADDRESS	0x50000000U
 #define AHB3_BASEADDRESS	0x60000000U
 
+/* Processor specific addresses */
+#define NVIC_ISER0			((__vo uint32_t*)0xE000E100)
+#define NVIC_ISER1			((__vo uint32_t*)0xE000E104)
+#define NVIC_ISER2			((__vo uint32_t*)0xE000E108)
+#define NVIC_ISER3			((__vo uint32_t*)0xE000E10C)
+
+#define NVIC_ICER0			((__vo uint32_t*)0xE000E180)
+#define NVIC_ICER1			((__vo uint32_t*)0xE000E184)
+#define NVIC_ICER2			((__vo uint32_t*)0xE000E188)
+#define NVIC_ICER3			((__vo uint32_t*)0xE000E18C)
+
+#define NVIC_IPR_BASEADDRESS			( (__vo uint32_t*) 0xE000E400 )
+
+#define SYST_CSR					( (__vo uint32_t*) 0xE000E010 )
+#define SYST_RVR					( (__vo uint32_t*) 0xE000E014 )
+#define SYST_CVR					( (__vo uint32_t*) 0xE000E018 )
+#define SYST_CALIB					( (__vo uint32_t*) 0xE000E01C )
+
+//4 bits of interrupt priority used (page 238 of reference manual)
+#define PRI_BITS_IMPLEMENTED	4
+
 /* APB1 bus peripheral address */
 #define TIM2_BASEADDRESS	APB1_BASEADDRESS
 #define TIM3_BASEADDRESS	(APB1_BASEADDRESS + 0x0400)
