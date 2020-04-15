@@ -160,7 +160,42 @@ void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority);
 
 
 
+/***********************************************************
+ * ASSERT DEFINITIONS
+ ***********************************************************/
+#define GPIO_PIN_MASK              0x0000FFFFU /* Mask for available pin*/
 
+#define IS_GPIO_PORT(INSTANCE) (((INSTANCE) == GPIOA) || \
+                                        ((INSTANCE) == GPIOB) || \
+                                        ((INSTANCE) == GPIOC) || \
+                                        ((INSTANCE) == GPIOD) || \
+                                        ((INSTANCE) == GPIOE) || \
+                                        ((INSTANCE) == GPIOF) || \
+                                        ((INSTANCE) == GPIOG) || \
+                                        ((INSTANCE) == GPIOH))
+
+#define IS_GPIO_PIN(ACTION) (((ACTION) == GPIO_PIN_RESET) || ((ACTION) == GPIO_PIN_SET))
+
+#define IS_GPIO_PIN(PIN)           (((((uint32_t)PIN) & GPIO_PIN_MASK ) != 0x00U) && ((((uint32_t)PIN) & ~GPIO_PIN_MASK) == 0x00U))
+
+
+#define IS_GPIO_MODE(MODE) (((MODE) == GPIO_MODE_IN)           ||\
+                            ((MODE) == GPIO_MODE_OUT)          ||\
+                            ((MODE) == GPIO_MODE_ALTFN)        ||\
+                            ((MODE) == GPIO_MODE_ANALOG)       ||\
+                            ((MODE) == GPIO_MODE_IT_RT)        ||\
+                            ((MODE) == GPIO_MODE_IT_FT)        ||\
+                            ((MODE) == GPIO_MODE_IT_RFT))
+
+
+
+#define IS_GPIO_SPEED(SPEED) (((SPEED) == GPIO_SPEED_LOW)  || ((SPEED) == GPIO_SPEED_MEDIUM) || \
+                              ((SPEED) == GPIO_SPEED_FAST) || ((SPEED) == GPIO_SPEED_HIGH))
+
+
+
+#define IS_GPIO_PULL(PULL) (((PULL) == GPIO_NO_PUPD) || ((PULL) == GPIO_PIN_PU) || \
+                            ((PULL) == GPIO_PIN_PD))
 
 
 

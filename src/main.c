@@ -5,6 +5,7 @@
  *      Author: Fernando
  */
 
+//#define NDEBUG //Disable all asserts
 
 /*
  * Includes
@@ -12,6 +13,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <assert.h> //use NDEBUG do disable asserts
 
 #include "stm32f446xx_gpio_driver.h"
 #include "stm32f446xx_spi_driver.h"
@@ -66,6 +68,17 @@ int main()
 	GPIO_Conf();
 	SPI_Conf();
 
+	//ASSERT TESTING
+	GPIO_Handle_t _GPIOTEST;
+	_GPIOTEST.pGPIOX = 1;
+	_GPIOTEST.GPIO_PinConfig.GPIO_PinNumber = 1;
+	_GPIOTEST.GPIO_PinConfig.GPIO_PinMode = 1;
+	_GPIOTEST.GPIO_PinConfig.GPIO_PinSpeed = 1;
+	_GPIOTEST.GPIO_PinConfig.GPIO_PinOPType = 1;
+	_GPIOTEST.GPIO_PinConfig.GPIO_PinPuPdControl = 1;
+	//GPIO_PeriClockControl(GPIOC, ENABLE);
+	GPIO_Init(&_GPIOTEST);
+
 
 	while(1)
 	{
@@ -93,13 +106,13 @@ void EXTI15_10_IRQHandler(void){
 
 	//Send the command
 	SPI_SendData(ARDUINO_SPI, &CMDCode, 1);
-	printf("SPI SEND: %d",CMDCode);
+	printf("SPI SEND: %d\n",CMDCode);
 	//Dummy read to clean
 	SPI_ReceiveData(ARDUINO_SPI, &Dummy_Read, 1);
-	printf("SPI Receive: %d",Dummy_Read);
+	printf("SPI Receive: %d\n",Dummy_Read);
 	//Send the Dummy byte to shift
 	SPI_SendData(ARDUINO_SPI, Dummy_Write, 1);
-	printf("SPI SEND: %d",Dummy_Write);
+	printf("SPI SEND: %d\n",Dummy_Write);
 	//get the ACK
 	SPI_ReceiveData(ARDUINO_SPI, &Ack_byte, 1);
 	if ( Ack_byte == ACK)
