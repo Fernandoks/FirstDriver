@@ -1,5 +1,7 @@
 # C Embedded Training Course
 
+This Repository is used for teaching purpose, this repository is incomplete and is filled during the Course. 
+
 C Embedded Training Course - First bare metal drivers for STM32
 
   - APIs and Drivers for STM32F446RE
