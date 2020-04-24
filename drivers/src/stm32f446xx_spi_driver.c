@@ -45,6 +45,13 @@
 /******************************************************************************
 * Function Definitions
 *******************************************************************************/
+/*
+ * Interfaces
+ * Keep definition in C, and Static to make private functions
+ */
+static void SPI_TXE_IRQ(SPI_Handle_t *pSPIHandle);
+static void SPI_RXNE_IRQ(SPI_Handle_t *pSPIHandle);
+static void SPI_OVR_ERROR(SPI_Handle_t *pSPIHandle);
 
 /******************************************************************************
 * Function : SPI_PeriClockControl()
@@ -397,25 +404,300 @@ void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRXBuffer, uint32_t Lenght)
 }
 
 /*
+ * Send data from SPI - Interrupt Mode
+ * This API get the pointer, save the data in the buffer
+ * then put the SPI State to Busy, and enable TXEIE
+ *
+ */
+SPI_States_t SPI_SendData_IT(SPI_Handle_t *pSPIx, uint8_t *pTXBuffer, uint32_t Lenght)
+{
+
+	if (pSPIx->TxState != SPI_BUSY_TX)
+	{
+		pSPIx->pTxBuffer = pTXBuffer;
+		pSPIx->TxLen = Lenght;
+
+		pSPIx->TxState = SPI_BUSY_TX;
+
+		pSPIx->pSPIx->CR2 |= (1ul << SPI_CR2_TXEIE);
+	}
+
+	return (pSPIx->TxState);
+}
+
+/*
+ * Reveive data from SPI - Interrupt Mode
+ * This API get the pointer, save the data in the buffer
+ * then put the SPI State to Busy, and enable TXEIE
+ *
+ */
+
+SPI_States_t SPI_ReceiveData_IT(SPI_Handle_t *pSPIx, uint8_t *pRXBuffer, uint32_t Lenght)
+{
+
+	if (pSPIx->TxState != SPI_BUSY_RX)
+	{
+		pSPIx->pRxBuffer = pRXBuffer;
+		pSPIx->RxLen = Lenght;
+
+		pSPIx->RxState = SPI_BUSY_RX;
+
+		pSPIx->pSPIx->CR2 |= (1ul << SPI_CR2_RXNEIE);
+	}
+
+	return (pSPIx->TxState);
+}
+
+/*
  * IRQ Configuration
+ * TODO: All NVIC configurations must be in a separated driver
  */
 
 void SPI_IRQInterruptConfig(IRQn_Type IRQNumber, uint8_t EnableDisable)
 {
+	if(EnableDisable == ENABLE)
+	{
+		if(IRQNumber < 32)
+		{
+		*NVIC_ISER0 |= (1 << IRQNumber);
+		}
+		else if((IRQNumber >= 32) && (IRQNumber < 64))
+		{
+			*NVIC_ISER1 |= (1 << IRQNumber);
+
+		}
+		else if((IRQNumber >= 64) && (IRQNumber < 96))
+		{
+			*NVIC_ISER2 |= (1 << IRQNumber);
+		}
+		else if((IRQNumber >= 96) && (IRQNumber < 128))
+		{
+			*NVIC_ISER3 |= (1 << IRQNumber);
+		}
+	}
+	else if(EnableDisable == DISABLE)
+	{
+		if(IRQNumber < 32)
+		{
+		*NVIC_ICER0 |= (1 << IRQNumber);
+		}
+		else if((IRQNumber >= 32) && (IRQNumber < 64))
+		{
+			*NVIC_ICER1 |= (1 << IRQNumber);
+
+		}
+		else if((IRQNumber >= 64) && (IRQNumber < 96))
+		{
+			*NVIC_ICER2 |= (1 << IRQNumber);
+		}
+		else if((IRQNumber >= 96) && (IRQNumber < 128))
+		{
+			*NVIC_ICER3 |= (1 << IRQNumber);
+		}
+	}
 
 }
 
+/*
+ * SPI Priority config
+ * TODO: Create a generic API for NVIC
+ */
 
 void SPI_IRQPriorityConfig(IRQn_Type IRQNumber, uint8_t IRQPriority)
 {
 
+	uint8_t iprx = IRQNumber / 4;
+	uint8_t iprx_section = IRQNumber % 4;
 
+	uint8_t shift_IRQ = (8 * iprx_section) + (8 - NO_PR_BITS_IMPLEMENTED);
+	*(NVIC_PR_BASEADDRESS + (iprx * 4)) = (IRQPriority << shift_IRQ);
 }
 
+
+/*
+ * SPI IRQ Handling
+ * You must REMAP or call this function in the SPI IRQ
+ */
 void SPI_IRQHandling(SPI_Handle_t *pSPIHandle)
 {
 
+	/*
+	 * Event Flags
+	 * TXE, RXNE, MODF, OVR, CRCERR, FRE
+	 */
+	uint8_t SRReg;
+	uint8_t CRReg;
+
+	SRReg = pSPIHandle->pSPIx->SR;
+	CRReg = pSPIHandle->pSPIx->CR2;
+
+	//TXE - Transmission buffer empty
+	if ( (SRReg & (1ul << SPI_SR_TXE)) && (CRReg & (1ul << SPI_CR2_TXEIE) ) )
+	{
+		SPI_TXE_IRQ(pSPIHandle);
+	}
+
+	//RXNE - Reception buffer not empty
+	if ( (SRReg & (1ul << SPI_SR_RXNE)) && (CRReg & (1ul << SPI_CR2_RXNEIE) ) )
+	{
+		SPI_RXNE_IRQ(pSPIHandle);
+	}
+
+	/*
+	 * ERROR INTERRUPTS
+	 */
+	//OVR - Overrun error (lost data due not reading)
+	if ( (SRReg & (1ul << SPI_SR_OVR)) && (CRReg & (1ul << SPI_CR2_ERRIE) ) )
+	{
+		SPI_OVR_ERROR(pSPIHandle);
+
+	}
+
+	//CRCERR - CRC error
+	if ( (SRReg & (1ul << SPI_SR_CRCERR)) && (CRReg & (1ul << SPI_CR2_ERRIE) ) )
+	{
+
+
+	}
+
+	//FREE - Frame format error
+	if ( (SRReg & (1ul << SPI_SR_FRE)) && (CRReg & (1ul << SPI_CR2_ERRIE) ) )
+	{
+
+
+	}
+	//MODF
+	if ( (SRReg & (1ul << SPI_SR_MODF)) && (CRReg & (1ul << SPI_CR2_ERRIE) ) )
+	{
+
+	}
+
 
 }
+
+static void SPI_TXE_IRQ(SPI_Handle_t *pSPIHandle)
+{
+	if (!pSPIHandle->TxLen)
+	{
+		//Clear flag and close transmission
+		SPI_CloseTransmission(pSPIHandle);
+		//Call the Callback event handler
+		SPI_IRQEvents_t event = SPI_EVENT_TC;
+		SPI_ApplicationEventCallback(pSPIHandle, event);
+
+	}
+	//Verify the Frame format (8bits or 16 bits) using the CR1_DFF
+	if ( (pSPIHandle->pSPIx->CR1 & (1 << SPI_CR1_DFF) ) == 1)
+	{
+		//16bits
+		pSPIHandle->pSPIx->DR = *((uint16_t*)pSPIHandle->pTxBuffer);
+		pSPIHandle->TxLen--;
+		(uint16_t*)pSPIHandle->pTxBuffer++;
+
+	}
+	else
+	{
+		//8bits
+		pSPIHandle->pSPIx->DR = *(pSPIHandle->pTxBuffer);
+		pSPIHandle->pTxBuffer++;
+	}
+
+}
+
+static void SPI_RXNE_IRQ(SPI_Handle_t *pSPIHandle)
+{
+	if (!pSPIHandle->TxLen)
+	{
+		//Clear flag and close Reception
+		SPI_CloseReception(pSPIHandle);
+		//Call the Callback event handler
+		SPI_ApplicationEventCallback(pSPIHandle, SPI_EVENT_RXE);
+
+	}
+	//Verify the Frame format (8bits or 16 bits) using the CR1_DFF
+	if ( (pSPIHandle->pSPIx->CR1 & (1 << SPI_CR1_DFF) ) == 1)
+	{
+		//16bits
+		pSPIHandle->pSPIx->DR = *((uint16_t*)pSPIHandle->pRxBuffer);
+		pSPIHandle->RxLen--;
+		(uint16_t*)pSPIHandle->pRxBuffer++;
+
+	}
+	else
+	{
+		//8bits
+		pSPIHandle->pSPIx->DR = *(pSPIHandle->pRxBuffer);
+		pSPIHandle->pRxBuffer++;
+	}
+	pSPIHandle->RxLen--;
+}
+
+static void SPI_OVR_ERROR(SPI_Handle_t *pSPIHandle)
+{
+
+	//Clear the flag if not reading already
+	if (pSPIHandle->TxState != SPI_BUSY_TX)
+	{
+		SPI_Clear_OVER(pSPIHandle->pSPIx);
+	}
+
+	SPI_ApplicationEventCallback(pSPIHandle, SPI_EVENT_OVR);
+}
+
+/*
+ * Close fucntions
+ *
+ */
+void SPI_CloseTransmission(SPI_Handle_t *pSPIHandle)
+{
+	//Clear interrupt TXEIE flag
+	pSPIHandle->pSPIx->CR2 &= (1ul < SPI_CR2_TXEIE);
+	//Reset buffers
+	pSPIHandle->pTxBuffer = NULL;
+	pSPIHandle->TxLen = 0;
+	pSPIHandle->TxState = SPI_READY;
+}
+
+
+void SPI_CloseReception(SPI_Handle_t *pSPIHandle)
+{
+	//Clear interrupt RXNEIE flag
+	pSPIHandle->pSPIx->CR2 &= (1ul < SPI_CR2_RXNEIE);
+	//Reset buffers
+	pSPIHandle->pRxBuffer = NULL;
+	pSPIHandle->RxLen = 0;
+	pSPIHandle->RxState = SPI_READY;
+
+}
+
+/*
+ * Clear OVR FLAG
+ */
+void SPI_Clear_OVER(SPI_RegDef_t *pSPIRegDef)
+{
+	uint8_t temp = 0;
+	//Dummy read to clear OVR Flag
+	temp = pSPIRegDef->DR;
+	temp = pSPIRegDef->SR;
+	(void)temp;
+}
+
+/*
+ * Generic CALLBACK
+ */
+
+__weak void SPI_ApplicationEventCallback(SPI_Handle_t *pSPIHandle, SPI_IRQEvents_t event)
+{
+	/*
+	 * This is weak implemented, do not TYPE CODE HERE!
+	 * Create a new function in your application with the same name
+	 * use the Handle to identify the SPI, and get the buffer pointer.
+	 * SPI_IRQEvents_t event gives you the Event flag
+	 */
+
+	__NOP();
+
+}
+
 
 
