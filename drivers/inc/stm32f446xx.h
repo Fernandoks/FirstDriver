@@ -11,7 +11,7 @@
 
 
 #include <stdint.h> //stdint is mandatory due uint32_t
-
+#include <stddef.h>
 
 
 
@@ -26,7 +26,8 @@
 #define FLAG_SET					SET
 #define FLAG_RESET					RESET
 
-
+#define __NOP()                    	__asm volatile ("nop")
+#define __weak						__attribute__((weak))
 
 /****************************** Processor Specific ******************************/
 /*

@@ -11,6 +11,16 @@
 #include "stm32f446xx.h"
 
 /*********************************************************************************
+ * SPI states
+ ********************************************************************************/
+typedef enum
+{
+	SPI_READY = 0,
+	SPI_BUSY_RX = 1,
+	SPI_BUSY_TX = 2
+} SPI_States_t;
+
+/*********************************************************************************
  * Configuration Structure for SPI
  ********************************************************************************/
 typedef struct
@@ -33,7 +43,29 @@ typedef struct
 {
 	SPI_RegDef_t	*pSPIx;
 	SPI_Config_t	SPIConfig;
+	uint8_t			*pTxBuffer;
+	uint8_t			*pRxBuffer;
+	uint32_t		TxLen;
+	uint32_t		RxLen;
+	SPI_States_t	TxState;
+	SPI_States_t	RxState;
 } SPI_Handle_t;
+
+/*********************************************************************************
+ * IRQ Events
+ * Event Flags
+ * TC, RXE, MODF, OVR, CRCERR, FRE
+ ********************************************************************************/
+typedef enum
+{
+	SPI_EVENT_TC = 0,
+	SPI_EVENT_RXE = 1,
+	SPI_EVENT_MODF = 2,
+	SPI_EVENT_OVR = 3,
+	SPI_EVENT_CRCERR = 4,
+	SPI_EVENT_FREE = 5
+} SPI_IRQEvents_t;
+
 
 /*********************************************************************************
  * Configuration Structure MACROS for SPIx
@@ -124,7 +156,8 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable);
  */
 void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTXBuffer, uint32_t Lenght);
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRXBuffer, uint32_t Lenght);
-
+SPI_States_t SPI_SendData_IT(SPI_Handle_t *pSPIx, uint8_t *pTXBuffer, uint32_t Lenght);
+SPI_States_t SPI_ReceiveData_IT(SPI_Handle_t *pSPIx, uint8_t *pRXBuffer, uint32_t Lenght);
 /*
  * Peripheral Status
  */
@@ -136,11 +169,22 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName);
 void SPI_IRQInterruptConfig(IRQn_Type IRQNumber, uint8_t EnableDisable);
 void SPI_IRQPriorityConfig(IRQn_Type IRQNumber, uint8_t IRQPriority);
 void SPI_IRQHandling(SPI_Handle_t *pSPIHandle);
+/*
+ * General CALLBACK
+ */
+void SPI_ApplicationEventCallback(SPI_Handle_t *pSPIHandle, SPI_IRQEvents_t event);
 
+/*
+ * Close APIS
+ */
+void SPI_CloseTransmission(SPI_Handle_t *pSPIHandle);
+void SPI_CloseReception(SPI_Handle_t *pSPIHandle);
 /*
  * Other Configuration
  */
 void SPI_Config_SSI(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable);
 void SPI_Config_SSOE(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable);
+void SPI_Clear_OVER(SPI_RegDef_t *pSPIRegDef);
+
 
 #endif /* INC_STM32F446XX_SPI_DRIVER_H_ */

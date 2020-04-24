@@ -27,6 +27,7 @@ __assert_func (const char *file, int line, const char *func,
             failedexpr, file, line, func ? ", function: " : "",
             func ? func : "");
 
+
 #endif
 
 //#define TRACE
@@ -35,6 +36,7 @@ __assert_func (const char *file, int line, const char *func,
                 failedexpr, file, line, func ? ", function: " : "",
                 func ? func : "");
 #endif
+
 
 	abort ();
 
