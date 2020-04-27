@@ -38,6 +38,8 @@ local.properties
 *.ko
 *.obj
 *.elf
+*.bin
+*.list
 
 # Libraries
 *.lib
@@ -63,6 +65,7 @@ local.properties
 *.map
 *.m
 *.png
+*.mk
 
 # Eclipse CDT project files
 .cproject
@@ -70,9 +73,11 @@ local.properties
 .settings/
 
 #Debug
+.Debug/
 Debug/
 Debug
 Debug.*
+*/Debug
 
 # Vagrant directory
 .vagrant/
