@@ -332,7 +332,7 @@ void SPI_Config_SSOE(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
 /*
  * FLAG Status
  */
-uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName)
+FLAG_Status_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName)
 {
 
 	if (pSPIx->SR & FlagName)

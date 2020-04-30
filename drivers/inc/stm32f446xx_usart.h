@@ -106,22 +106,17 @@ typedef struct
 #define UART_FLOWCONTROL_CTS_RTS	3
 
 
-#define USART_PE_FLAG					(1 << USART_SR_PE)
-#define USART_FE_FLAG					(1 << USART_SR_FE)
-#define USART_NF_FLAG					(1 << USART_SR_NF)
-#define USART_ORE_FLAG					(1 << USART_SR_ORE)
-#define USART_IDLE_FLAG					(1 << USART_SR_IDLE)
-#define USART_RXNE_FLAG					(1 << USART_SR_RXNE)
-#define USART_TC_FLAG					(1 << USART_SR_TC)
-#define USART_TXE_FLAG					(1 << USART_SR_TXE)
-#define USART_LBD_FLAG					(1 << USART_SR_LBD)
-#define USART_CTS_FLAG					(1 << USART_SR_CTS)
+#define UART_PE_FLAG					(1 << UART_SR_PE)
+#define UART_FE_FLAG					(1 << UART_SR_FE)
+#define UART_NF_FLAG					(1 << UART_SR_NF)
+#define UART_ORE_FLAG					(1 << UART_SR_ORE)
+#define UART_IDLE_FLAG					(1 << UART_SR_IDLE)
+#define UART_RXNE_FLAG					(1 << UART_SR_RXNE)
+#define UART_TC_FLAG					(1 << UART_SR_TC)
+#define UART_TXE_FLAG					(1 << UART_SR_TXE)
+#define UART_LBD_FLAG					(1 << UART_SR_LBD)
+#define UART_CTS_FLAG					(1 << UART_SR_CTS)
 
-typedef enum
-{
-	FLAG_SET = 0,
-	FLAG_RESET = 1,
-} FLAG_Status_t;
 
 
 /*********************************************************************************
@@ -131,8 +126,8 @@ typedef enum
  ********************************************************************************/
 typedef enum
 {
-	SPI_EVENT_TC = 0,
-	SPI_EVENT_RXE = 1,
+	UART_EVENT_TC = 0,
+	UART_EVENT_RXE = 1,
 } UART_Events_t;
 
 
@@ -146,21 +141,22 @@ Status_t UART_PeriClockControl(UART_RegDef_t *pUARTx, uint8_t EnableDisable); /*
  */
 Status_t UART_Init(UART_Handle_t *pUARTHandle);
 Status_t UART_DeInit(UART_RegDef_t *pUARTx);
-Status_t UART_SetBaudRate(UART_RegDef_t *pUARTx);
+Status_t UART_SetBaudRate(UART_Handle_t *pUARTHandle);
 
 /*
  * Data send and Receive
  */
-void UART_SendData(UART_RegDef_t *pUARTx, uint8_t *pTXBuffer, uint32_t Lenght);
-void UART_ReceiveData(UART_RegDef_t *pUARTx, uint8_t *pRXBuffer, uint32_t Lenght);
-UART_Events_t UART_SendData_IT(UART_Handle_t *pUARTHandle, uint8_t *pTXBuffer, uint32_t Lenght);
-UART_Events_t UART_ReceiveData_IT(UART_Handle_t *pUARTHandle, uint8_t *pRXBuffer, uint32_t Lenght);
+void UART_SendData(UART_Handle_t *pUARTHandle);
+void UART_ReceiveDataBlock(UART_Handle_t *pUARTHandle, uint8_t *pRxBuffer, uint32_t Lenght);
+void UART_ReceiveDataString(UART_Handle_t *pUARTHandle, uint8_t *pRxBuffer);
+UART_Events_t UART_SendData_IT(UART_Handle_t *pUARTHandle);
+UART_Events_t UART_ReceiveData_IT(UART_Handle_t *pUARTHandle);
 /*
  * Peripheral Status
  */
-uint8_t UART_GetFlagStatus(UART_RegDef_t *pUARTx, uint32_t FlagName);
+FLAG_Status_t UART_GetFlagStatus(UART_RegDef_t *pUARTx, uint32_t FlagName);
 uint8_t UART_ClearFlag(UART_RegDef_t *pUARTx, uint32_t FlagName);
-uint8_t UART_PeripheralControl(UART_RegDef_t *pUARTx, uint32_t FlagName);
+void UART_PeripheralControl(UART_RegDef_t *pUARTx, uint32_t FlagName);
 
 /*
  * Callback
