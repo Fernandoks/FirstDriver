@@ -23,6 +23,8 @@
 #define RESET						DISABLE
 #define GPIO_PIN_SET				SET
 #define GPIO_PIN_RESET				RESET
+//#define FLAG_RESET					RESET
+//#define FLAG_SET					SET
 
 
 #define __NOP()                    	__asm volatile ("nop")
@@ -33,6 +35,13 @@ typedef enum
 	STATUS_ERROR = 0,
 	STATUS_OK = 1
 } Status_t;
+
+typedef enum
+{
+	FLAG_RESET =0,
+	FLAG_SET = 1
+} FLAG_Status_t;
+
 
 /****************************** Processor Specific ******************************/
 /*
