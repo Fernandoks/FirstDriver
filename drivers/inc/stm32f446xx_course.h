@@ -182,6 +182,16 @@ typedef struct{
 	__vo uint32_t AFRH;
 }GPIO_RegDef_t;
 
+typedef struct{
+	__vo uint32_t SR;
+	__vo uint32_t DR;
+	__vo uint32_t BRR;
+	__vo uint32_t CR1;
+	__vo uint32_t CR2;
+	__vo uint32_t CR3;
+	__vo uint32_t GTPR;
+}USART_RegDef_t;
+
 /* EXTI_RegDef_t */
 typedef struct{
 	__vo uint32_t IMR;
