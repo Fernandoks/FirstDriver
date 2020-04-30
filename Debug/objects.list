@@ -3,6 +3,7 @@
 "drivers/src/stm32f446xx_gpio_driver_course.o"
 "drivers/src/stm32f446xx_rcc.o"
 "drivers/src/stm32f446xx_spi_driver.o"
+"drivers/src/stm32f446xx_usart.o"
 "src/assert.o"
 "src/commander.o"
 "src/main.o"
