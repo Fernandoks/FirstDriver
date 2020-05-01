@@ -127,7 +127,15 @@ typedef struct
 typedef enum
 {
 	UART_EVENT_TC = 0,
-	UART_EVENT_RXE = 1,
+	UART_EVENT_TXE = 1,
+	UART_EVENT_RXNE = 2,
+	UART_EVENT_CTS = 3,
+	UART_EVENT_IDLE = 4,
+	UART_EVENT_ORE = 5,
+	UART_EVENT_FE = 6,
+	UART_EVENT_LBD = 7,
+	UART_EVENT_NF = 8,
+	UART_EVENT_PE = 9,
 } UART_Events_t;
 
 
@@ -149,8 +157,7 @@ Status_t UART_SetBaudRate(UART_Handle_t *pUARTHandle);
 void UART_SendData(UART_Handle_t *pUARTHandle);
 void UART_ReceiveDataBlock(UART_Handle_t *pUARTHandle, uint8_t *pRxBuffer, uint32_t Lenght);
 void UART_ReceiveDataString(UART_Handle_t *pUARTHandle, uint8_t *pRxBuffer);
-UART_Events_t UART_SendData_IT(UART_Handle_t *pUARTHandle);
-UART_Events_t UART_ReceiveData_IT(UART_Handle_t *pUARTHandle);
+
 /*
  * Peripheral Status
  */
@@ -159,11 +166,23 @@ uint8_t UART_ClearFlag(UART_RegDef_t *pUARTx, uint32_t FlagName);
 void UART_PeripheralControl(UART_RegDef_t *pUARTx, uint32_t FlagName);
 
 /*
+ * IRQ
+ */
+
+void UART_IRQInterruptConfig(IRQn_Type IRQNumber, uint8_t EnableDisable);
+void UART_IRQPriorityConfig(IRQn_Type IRQNumber,uint32_t IRQPriority);
+void UART_IRQ_Control(UART_Handle_t *pUARTHandle, uint8_t CR1IRQbit, uint8_t CMD);
+UART_States_t UART_SendDataBlockIT(UART_Handle_t *pUARTHandle,uint8_t *pTxBuffer, uint32_t Lenght);
+UART_States_t UART_ReceiveBlockDataIT(UART_Handle_t *pUARTHandle,uint8_t *pRxBuffer, uint32_t Lenght);
+void UART_IRQHandling(UART_Handle_t *pUARTHandle);
+/*
  * Callback
  */
-uint8_t UART_EventCallback(UART_Handle_t *pUARTHandle, UART_Events_t Event);
+void UART_EventCallback(UART_Handle_t *pUARTHandle, UART_Events_t Event);
 
 
 
 
 #endif /* INC_STM32F446XX_USART_H_ */
+
+

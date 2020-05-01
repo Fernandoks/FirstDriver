@@ -42,8 +42,6 @@ void SysTickInit (void)
 	//set systick counter to interrupt each ms
 	*SYST_RVR = ((clock/(1000))-1);
 
-
-
 }
 
 
