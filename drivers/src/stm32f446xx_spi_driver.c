@@ -332,7 +332,7 @@ void SPI_Config_SSOE(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
 /*
  * FLAG Status
  */
-uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName)
+FLAG_Status_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName)
 {
 
 	if (pSPIx->SR & FlagName)
@@ -525,8 +525,8 @@ void SPI_IRQHandling(SPI_Handle_t *pSPIHandle)
 	 * Event Flags
 	 * TXE, RXNE, MODF, OVR, CRCERR, FRE
 	 */
-	uint8_t SRReg;
-	uint8_t CRReg;
+	uint32_t SRReg;
+	uint32_t CRReg;
 
 	SRReg = pSPIHandle->pSPIx->SR;
 	CRReg = pSPIHandle->pSPIx->CR2;

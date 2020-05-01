@@ -18,6 +18,7 @@
 #include "stm32f446xx_gpio_driver.h"
 #include "stm32f446xx_spi_driver.h"
 #include "stm32f446xx_delay.h"
+#include "stm32f446xx_usart.h"
 
 //LED PA5
 //Button PC13
@@ -39,6 +40,10 @@
 #define SPI1_SCLK_PIN			GPIO_PIN_5
 #define SPI1_NSS_PIN			GPIO_PIN_4
 
+#define USART2_PORT				GPIOA
+#define USART2_TX_PIN			GPIO_PIN_2
+#define USART2_RX_PIN			GPIO_PIN_3
+
 #define DUMMY_BYTE				0xFF
 
 
@@ -48,18 +53,24 @@
 void GPIO_Conf(void);
 void delay(void);
 void SPI_Conf(void);
+void UART_Conf(UART_Handle_t* _UART2Handler);
+
 
 extern void initialise_monitor_handles();
 
 
 uint8_t* TxData = "Hello, World!";
-uint8_t* RxData[100];
+uint8_t RxData[100];
+
+UART_Handle_t pUART2;
 
 /*
  * START PROGRAM
  */
 int main()
 {
+
+
 	initialise_monitor_handles();
 
 	printf("Program starting\n");
@@ -67,28 +78,37 @@ int main()
 	SysTickInit();
 	GPIO_Conf();
 	SPI_Conf();
+	UART_Conf(&pUART2);
 
-	//ASSERT TESTING
-	GPIO_Handle_t _GPIOTEST;
-	_GPIOTEST.pGPIOX = 1;
-	_GPIOTEST.GPIO_PinConfig.GPIO_PinNumber = 1;
-	_GPIOTEST.GPIO_PinConfig.GPIO_PinMode = 1;
-	_GPIOTEST.GPIO_PinConfig.GPIO_PinSpeed = 1;
-	_GPIOTEST.GPIO_PinConfig.GPIO_PinOPType = 1;
-	_GPIOTEST.GPIO_PinConfig.GPIO_PinPuPdControl = 1;
-	//GPIO_PeriClockControl(GPIOC, ENABLE);
-	GPIO_Init(&_GPIOTEST);
+
+	pUART2.pTxBuffer = (uint8_t*)"Program Starting\r\n";
+	pUART2.TxLen = strlen((char*)pUART2.pTxBuffer);
+	UART_SendData(&pUART2);
+
+	UART_IRQInterruptConfig(USART2_IRQn, ENABLE);
+	UART_IRQPriorityConfig(USART2_IRQn,0);
+
+	UART_SendDataBlockIT(&pUART2,TxData, strlen((char*)TxData));
 
 
 	while(1)
 	{
-		//GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
+		//UART_ReceiveBlockDataIT(&pUART2, RxData, strlen((char*)RxData));
+		UART_ReceiveDataString(&pUART2, RxData);
+		TxData = RxData;
+		UART_SendDataBlockIT(&pUART2,TxData, strlen((char*)TxData));
+		GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
 		delay_ms(100);
 	}
 
 	return 0;
 }
 
+
+void USART2_IRQHandler(void)
+{
+	UART_IRQHandling(&pUART2);
+}
 
 /*
  * EXTI Handler
@@ -125,6 +145,44 @@ void EXTI15_10_IRQHandler(void){
 
 	while(SPI_GetFlagStatus(ARDUINO_SPI, SPI_BSY_FLAG) );
 	SPI_PeripheralControl(ARDUINO_SPI, DISABLE);
+
+}
+
+void UART_Conf(UART_Handle_t* _UART2Handler)
+{
+
+	/*
+	 * Usart2
+	 * TX - PA2
+	 * RX - PA3
+	 */
+	GPIO_Handle_t _UART_Pins;
+	_UART_Pins.pGPIOX = USART2_PORT;
+	_UART_Pins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALTFN;
+	_UART_Pins.GPIO_PinConfig.GPIO_PinAltFunMode = GPIO_AF7;
+	_UART_Pins.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
+	_UART_Pins.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;
+	_UART_Pins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST;
+
+	_UART_Pins.GPIO_PinConfig.GPIO_PinNumber = USART2_TX_PIN;
+	GPIO_Init(&_UART_Pins);
+
+	_UART_Pins.GPIO_PinConfig.GPIO_PinNumber = USART2_RX_PIN;
+	GPIO_Init(&_UART_Pins);
+
+
+	_UART2Handler->pUARTx = UART2;
+	_UART2Handler->UARTConfig.USART_BaudRate = UART_BAUDRATE_9600;
+	_UART2Handler->UARTConfig.USART_HWFlowControl = UART_FLOWCONTROL_NONE;
+	_UART2Handler->UARTConfig.USART_Mode = UART_MODE_TXRX;
+	_UART2Handler->UARTConfig.USART_Parity = UART_PARITY_DISABLE;
+	_UART2Handler->UARTConfig.USART_StopBits = UART_STOPBITS_1;
+	_UART2Handler->UARTConfig.USART_WordLength = UART_FLOWCONTROL_NONE;
+	UART_Init(_UART2Handler);
+
+
+
+
 
 }
 
@@ -169,7 +227,7 @@ void SPI_Conf(void)
 	 *	SS	-	PB12	-	D10
 	 *
 	 */
-#define SPI
+//#define SPI
 #ifdef SPI
 
 

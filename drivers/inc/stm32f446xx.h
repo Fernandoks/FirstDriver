@@ -23,11 +23,25 @@
 #define RESET						DISABLE
 #define GPIO_PIN_SET				SET
 #define GPIO_PIN_RESET				RESET
-#define FLAG_SET					SET
-#define FLAG_RESET					RESET
+//#define FLAG_RESET				RESET
+//#define FLAG_SET					SET
+
 
 #define __NOP()                    	__asm volatile ("nop")
 #define __weak						__attribute__((weak))
+
+typedef enum
+{
+	STATUS_ERROR = 0,
+	STATUS_OK = 1
+} Status_t;
+
+typedef enum
+{
+	FLAG_RESET =0,
+	FLAG_SET = 1
+} FLAG_Status_t;
+
 
 /****************************** Processor Specific ******************************/
 /*
@@ -107,8 +121,8 @@
 #define SPI3_BASEADDRESS			(APB1PERIPH_BASE + 0x3C00)
 #define UART4_BASEADDRESS			(APB1PERIPH_BASE + 0x4C00)
 #define UART5_BASEADDRESS			(APB1PERIPH_BASE + 0x5000)
-#define USART2_BASEADDRESS			(APB1PERIPH_BASE + 0x4400)
-#define USART3_BASEADDRESS			(APB1PERIPH_BASE + 0x4800)
+#define UART2_BASEADDRESS			(APB1PERIPH_BASE + 0x4400)
+#define UART3_BASEADDRESS			(APB1PERIPH_BASE + 0x4800)
 
 /*
  * APB2 bus peripheral addresses
@@ -117,8 +131,8 @@
 #define SPI4_BASEADDRESS			(APB2PERIPH_BASE + 0x3400)
 #define EXTI_BASEADDRESS			(APB2PERIPH_BASE + 0x3C00)
 #define SYSCFG_BASEADDRESS			(APB2PERIPH_BASE + 0x3800)
-#define USART1_BASEADDRESS			(APB2PERIPH_BASE + 0x1000)
-#define USART6_BASEADDRESS			(APB2PERIPH_BASE + 0x1400)
+#define UART1_BASEADDRESS			(APB2PERIPH_BASE + 0x1000)
+#define UART6_BASEADDRESS			(APB2PERIPH_BASE + 0x1400)
 
 
 
@@ -355,6 +369,20 @@ typedef struct{
 
 } SPI_RegDef_t;
 
+/*********************************************************************************
+ * UART_RegDef_t
+ *********************************************************************************/
+
+typedef struct{
+	__vo uint32_t SR; 				//Address offset:0x00
+	__vo uint32_t DR; 				//Address offset:0x04
+	__vo uint32_t BRR; 				//Address offset:0x08
+	__vo uint32_t CR1; 				//Address offset:0x0C
+	__vo uint32_t CR2;				//Address offset:0x10
+	__vo uint32_t CR3;				//Address offset:0x14
+	__vo uint32_t GTPR;				//Address offset:0x18
+} UART_RegDef_t;
+
 
 
 /*********************************************************************************
@@ -382,6 +410,13 @@ typedef struct{
 #define SPI2					((SPI_RegDef_t*)SPI2_BASEADDRESS)
 #define SPI3					((SPI_RegDef_t*)SPI3_BASEADDRESS)
 #define SPI4					((SPI_RegDef_t*)SPI4_BASEADDRESS)
+
+#define UART1					((UART_RegDef_t*)UART1_BASEADDRESS)
+#define UART2					((UART_RegDef_t*)UART2_BASEADDRESS)
+#define UART3					((UART_RegDef_t*)UART3_BASEADDRESS)
+#define UART4					((UART_RegDef_t*)UART4_BASEADDRESS)
+#define UART5					((UART_RegDef_t*)UART5_BASEADDRESS)
+#define UART6					((UART_RegDef_t*)UART6_BASEADDRESS)
 
 /*
  * Clock Enable Macros for GPIOx
@@ -463,7 +498,7 @@ typedef struct{
 #define SPI4_PCLK_DI()			( RCC->APB2ENR &= ~(1 << 13) )
 
 /*
- * Reset GPIO Macros
+ * Reset SPI Macros
  */
 #define SPI1_RESET()			do{ (RCC->APB2RSTR |= (1 << 12)); (RCC->APB2RSTR &= ~(1 << 12));}while(0)
 #define SPI2_RESET()			do{ (RCC->APB1RSTR |= (1 << 14)); (RCC->APB1RSTR &= ~(1 << 14));}while(0)
@@ -473,23 +508,32 @@ typedef struct{
 /*
  * Clock Enable Macros for USART
  */
-#define USART1_PCLK_EN()		( RCC->APB2ENR |= (1 << 4) )
-#define USART2_PCLK_EN()		( RCC->APB1ENR |= (1 << 17) )
-#define USART3_PCLK_EN()		( RCC->APB1ENR |= (1 << 18) )
+#define UART1_PCLK_EN()			( RCC->APB2ENR |= (1 << 4) )
+#define UART2_PCLK_EN()			( RCC->APB1ENR |= (1 << 17) )
+#define UART3_PCLK_EN()			( RCC->APB1ENR |= (1 << 18) )
 #define UART4_PCLK_EN()			( RCC->APB1ENR |= (1 << 19) )
 #define UART5_PCLK_EN()			( RCC->APB1ENR |= (1 << 20) )
-#define USART6_PCLK_EN()		( RCC->APB2ENR |= (1 <<) 5)
+#define UART6_PCLK_EN()			( RCC->APB2ENR |= (1 << 5) )
 
 /*
  * Clock Disable Macros for USART
  */
-#define USART1_PCLK_DI()		( RCC->APB2ENR &= ~(1 << 4) )
-#define USART2_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 17) )
-#define USART3_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 18) )
+#define UART1_PCLK_DI()			( RCC->APB2ENR &= ~(1 << 4) )
+#define UART2_PCLK_DI()			( RCC->APB1ENR &= ~(1 << 17) )
+#define UART3_PCLK_DI()			( RCC->APB1ENR &= ~(1 << 18) )
 #define UART4_PCLK_DI()			( RCC->APB1ENR &= ~(1 << 19) )
 #define UART5_PCLK_DI()			( RCC->APB1ENR &= ~(1 << 20) )
-#define USART6_PCLK_DI()		( RCC->APB2ENR &= ~(1 <<) 5)
+#define UART6_PCLK_DI()			( RCC->APB2ENR &= ~(1 << 5) )
 
+/*
+ * Reset UART Macros
+ */
+#define UART1_RESET()			do{ (RCC->APB2RSTR |= (1 << 4)); (RCC->APB2RSTR &= ~(1 << 4));}while(0)
+#define UART2_RESET()			do{ (RCC->APB1RSTR |= (1 << 17)); (RCC->APB1RSTR &= ~(1 << 17));}while(0)
+#define UART3_RESET()			do{ (RCC->APB1RSTR |= (1 << 18)); (RCC->APB1RSTR &= ~(1 << 18));}while(0)
+#define UART4_RESET()			do{ (RCC->APB1RSTR |= (1 << 19)); (RCC->APB1RSTR &= ~(1 << 19));}while(0)
+#define UART5_RESET()			do{ (RCC->APB1RSTR |= (1 << 20)); (RCC->APB1RSTR &= ~(1 << 20));}while(0)
+#define UART6_RESET()			do{ (RCC->APB2RSTR |= (1 << 5)); (RCC->APB2RSTR &= ~(1 << 5));}while(0)
 
 /*
  * Clock Enable Macros for SYSCFG
@@ -502,7 +546,7 @@ typedef struct{
 #define SYSCFG_PCLK_DI()		( RCC->APB2ENR &= ~(1 << 14) )
 
 /*********************************************************************************
- * Bit position definition SPI Peripheral
+ * Bit position definition UART Peripheral
  *********************************************************************************/
 
 //TODO: Inform the register in comments.
@@ -543,6 +587,68 @@ typedef struct{
 #define SPI_SR_FRE				8
 
 
+
+/*********************************************************************************
+ * Bit position definition SPI Peripheral
+ *********************************************************************************/
+
+//TODO: Inform the register in comments.
+
+#define UART_SR_PE 				0
+#define UART_SR_FE 				1
+#define UART_SR_NF 				2
+#define UART_SR_ORE 			3
+#define UART_SR_IDLE			4
+#define UART_SR_RXNE			5
+#define UART_SR_TC 				6
+#define UART_SR_TXE 			7
+#define UART_SR_LBD 			8
+#define UART_SR_CTS 			9
+
+#define UART_BRR_FRACTION		0
+#define UART_BRR_MANTISSA		4
+
+#define UART_CR1_SBK 			0
+#define UART_CR1_RWU			1
+#define UART_CR1_RE				2
+#define UART_CR1_TE 			3
+#define UART_CR1_IDLEIE 		4
+#define UART_CR1_RXNEIE 		5
+#define UART_CR1_TCIE 			6
+#define UART_CR1_TXEIE 			7
+#define UART_CR1_PEIE 			8
+#define UART_CR1_PS 			9
+#define UART_CR1_PCE 			10
+#define UART_CR1_WAKE 			11
+#define UART_CR1_M 				12
+#define UART_CR1_UE 			13
+#define UART_CR1_OVER8 			15
+
+#define UART_CR2_ADD 			0
+#define UART_CR2_LBDL 			5
+#define UART_CR2_LBDIE 			6
+#define UART_CR2_LBCL 			8
+#define UART_CR2_CPHA 			9
+#define UART_CR2_CPOL 			10
+#define UART_CR2_CLKEN 			11
+#define UART_CR2_STOP 			12
+#define UART_CR2_LINEN 			14
+
+#define UART_CR3_EIE 			0
+#define UART_CR3_IREN 			1
+#define UART_CR3_IRLP 			2
+#define UART_CR3_HDSEL 			3
+#define UART_CR3_NACK 			4
+#define UART_CR3_SCEN 			5
+#define UART_CR3_DMAR 			6
+#define UART_CR3_DMAT 			7
+#define UART_CR3_RTSE 			8
+#define UART_CR3_CTSE 			9
+#define UART_CR3_CTSIE 			10
+#define UART_CR3_ONEBIT			11
+
+#define UART_GTPR_PSC 			0
+#define UART_GTPR_GT 			8
 
 #endif /* INC_STM32F446XX_H_ */
 
