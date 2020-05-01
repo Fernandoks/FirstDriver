@@ -1,3 +1,5 @@
+"drivers/src/CircularBuffer.o"
+"drivers/src/CircularUART.o"
 "drivers/src/stm32f446xx_delay.o"
 "drivers/src/stm32f446xx_gpio_driver.o"
 "drivers/src/stm32f446xx_gpio_driver_course.o"

@@ -19,6 +19,7 @@
 #include "stm32f446xx_spi_driver.h"
 #include "stm32f446xx_delay.h"
 #include "stm32f446xx_usart.h"
+#include "CircularUART.h"
 
 //LED PA5
 //Button PC13
@@ -59,7 +60,7 @@ void UART_Conf(UART_Handle_t* _UART2Handler);
 extern void initialise_monitor_handles();
 
 
-uint8_t* TxData = "Hello, World!";
+uint8_t* TxData = "Hello, World!\r\n";
 uint8_t RxData[100];
 
 UART_Handle_t pUART2;
@@ -88,15 +89,23 @@ int main()
 	UART_IRQInterruptConfig(USART2_IRQn, ENABLE);
 	UART_IRQPriorityConfig(USART2_IRQn,0);
 
-	UART_SendDataBlockIT(&pUART2,TxData, strlen((char*)TxData));
+	size_t size = 64;
+	uint8_t* buffer = (uint8_t*)malloc((int)size*sizeof(uint8_t));
+
+	cbuf_handle_t cbuf = CircularUART_Init(buffer, size);
+
+	uint32_t txdatalen = strlen(TxData);
+	for (int i = 0; i < txdatalen; ++i)
+	{
+		circular_buffer_push(cbuf, TxData[i]);
+	}
+
+	 CircularUART_Send(cbuf, &pUART2);
 
 
 	while(1)
 	{
-		//UART_ReceiveBlockDataIT(&pUART2, RxData, strlen((char*)RxData));
-		UART_ReceiveDataString(&pUART2, RxData);
-		TxData = RxData;
-		UART_SendDataBlockIT(&pUART2,TxData, strlen((char*)TxData));
+
 		GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
 		delay_ms(100);
 	}
