@@ -149,7 +149,7 @@ Status_t UART_PeriClockControl(UART_RegDef_t *pUARTx, uint8_t EnableDisable); /*
  */
 Status_t UART_Init(UART_Handle_t *pUARTHandle);
 Status_t UART_DeInit(UART_RegDef_t *pUARTx);
-Status_t UART_SetBaudRate(UART_Handle_t *pUARTHandle);
+static Status_t UART_SetBaudRate(UART_Handle_t *pUARTHandle);
 
 /*
  * Data send and Receive
@@ -181,6 +181,56 @@ void UART_IRQHandling(UART_Handle_t *pUARTHandle);
 void UART_EventCallback(UART_Handle_t *pUARTHandle, UART_Events_t Event);
 
 
+/***********************************************************
+ * ASSERT DEFINITIONS
+ ***********************************************************/
+
+#define IS_UART(INSTANCE) 				(((INSTANCE) == UART1) 		|| \
+                                        ((INSTANCE) == UART2) 		|| \
+                                        ((INSTANCE) == UART3) 		|| \
+                                        ((INSTANCE) == UART4)		|| \
+										((INSTANCE) == UART5)		|| \
+										((INSTANCE) == UART6))
+
+
+
+#define IS_UART_MODE(MODE) (((MODE) == UART_MODE_TX)       		||\
+							((MODE) == UART_MODE_RX)  ||\
+                            ((MODE) == UART_MODE_TXRX))
+
+
+#define IS_UART_BAUDRATE(MODE) 			(((MODE) == UART_BAUDRATE_1200) 	|| \
+                                        ((MODE) == UART_BAUDRATE_2400) 		|| \
+                                        ((MODE) == UART_BAUDRATE_9600) 		|| \
+                                        ((MODE) == UART_BAUDRATE_19200)		|| \
+										((MODE) == UART_BAUDRATE_38400)		|| \
+										((MODE) == UART_BAUDRATE_57600)	|| \
+										((MODE) == UART_BAUDRATE_115200) 	|| \
+										((MODE) == UART_BAUDRATE_230400) 	|| \
+										((MODE) == UART_BAUDRATE_460800)	|| \
+										((MODE) == UART_BAUDRATE_921600)	|| \
+										((MODE) == UART_BAUDRATE_2M)		|| \
+										((MODE) == UART_BAUDRATE_3M))
+
+#define IS_UART_STOPBITS(MODE) 	(((MODE) == UART_STOPBITS_1)       		||\
+								((MODE) == UART_STOPBITS_HALF)  		||\
+								((MODE) == UART_STOPBITS_2)  			||\
+								((MODE) == UART_STOPBITS_1HALF))
+
+
+
+#define IS_UART_WORD(MODE) (((MODE) == UART_WORD_8BITS)       			||\
+                            ((MODE) == UART_WORD_9BITS))
+
+
+#define IS_UART_PARITY(MODE) (((MODE) == UART_PARITY_DISABLE)       		||\
+							((MODE) == UART_PARITY_EN_EVEN)       		||\
+                            ((MODE) == UART_PARITY_EN_ODD))
+
+#define IS_UART_FLOW(MODE) (((MODE) == UART_FLOWCONTROL_NONE)       	||\
+							((MODE) == UART_FLOWCONTROL_CTS)       		||\
+							((MODE) == UART_FLOWCONTROL_CTS)       		||\
+                            ((MODE) == UART_FLOWCONTROL_RTS))
 
 
 #endif /* INC_STM32F446XX_USART_H_ */

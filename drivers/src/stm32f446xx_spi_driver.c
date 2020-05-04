@@ -21,7 +21,7 @@
 /******************************************************************************
 * Includes
 *******************************************************************************/
-#include "stm32f446xx_spi_driver.h"		/* For TODO: WHY ME? */
+#include "stm32f446xx_spi_driver.h"
 
 /******************************************************************************
 * Module Preprocessor Constants
@@ -78,6 +78,9 @@ static void SPI_OVR_ERROR(SPI_Handle_t *pSPIHandle);
 
 void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t EnableDisable)
 {
+	assert(IS_SPI(pSPIx));
+
+
 	if (EnableDisable == ENABLE)
 	{
 		if (pSPIx == SPI1)
@@ -139,6 +142,16 @@ void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t EnableDisable)
 
 void SPI_Init(SPI_Handle_t *pSPIHandle)
 {
+
+	assert(IS_SPI(pSPIHandle->pSPIx));
+	assert(IS_SPI_MODE(pSPIHandle->SPIConfig.SPI_DeviceMode));
+	assert(IS_SPI_BUSCONFIG(pSPIHandle->SPIConfig.SPI_BusConfig));
+	assert(IS_SPI_SCLKSPEED(pSPIHandle->SPIConfig.SPI_SPI_SclkSpeed));
+	assert(IS_SPI_DFF(pSPIHandle->SPIConfig.SPI_DFF));
+	assert(IS_SPI_CPOL(pSPIHandle->SPIConfig.SPI_CPOL));
+	assert(IS_SPI_CPHA(pSPIHandle->SPIConfig.SPI_CPHA));
+	assert(IS_SPI_SSM(pSPIHandle->SPIConfig.SPI_SSM));
+
 
 	//Clock Enable
 	SPI_PeriClockControl(pSPIHandle->pSPIx,ENABLE);
@@ -213,6 +226,8 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 
 void SPI_DeInit(SPI_RegDef_t *pSPIx)
 {
+	assert(IS_SPI(pSPIx));
+
 	if (pSPIx == SPI1)
 	{
 		SPI1_RESET();
@@ -252,6 +267,8 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
 
 void SPI_PeripheralControl(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
 {
+	assert(IS_SPI(pSPIRegDef));
+
 	if (EnableDisable == ENABLE)
 	{
 		pSPIRegDef->CR1 |= (1 << SPI_CR1_SPE);
@@ -283,6 +300,8 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
 *******************************************************************************/
 void SPI_Config_SSI(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
 {
+	assert(IS_SPI(pSPIRegDef));
+
 	if (EnableDisable == ENABLE)
 	{
 		pSPIRegDef->CR1 |= (1 << SPI_CR1_SSI);
@@ -316,6 +335,8 @@ void SPI_Config_SSI(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
 *******************************************************************************/
 void SPI_Config_SSOE(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
 {
+	assert(IS_SPI(pSPIRegDef));
+
 	if (EnableDisable == ENABLE)
 	{
 		pSPIRegDef->CR2 |= (1 << SPI_CR2_SSOE);
@@ -334,7 +355,7 @@ void SPI_Config_SSOE(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable)
  */
 FLAG_Status_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName)
 {
-
+	assert(IS_SPI(pSPIx));
 	if (pSPIx->SR & FlagName)
 	{
 		return FLAG_SET;
@@ -348,6 +369,11 @@ FLAG_Status_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName)
 
 void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTXBuffer, uint32_t Lenght)
 {
+
+	assert(IS_SPI(pSPIx));
+	assert(pTXBuffer != NULL);
+	assert(Lenght > 0);
+
 	while (Lenght > 0)
 	{
 		//while( !( pSPIx->SR & (1 << SPI_SR_TXE) ) )  //This tests if the bit position is set
@@ -378,6 +404,10 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTXBuffer, uint32_t Lenght)
  */
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRXBuffer, uint32_t Lenght)
 {
+	assert(IS_SPI(pSPIx));
+	assert(pRXBuffer != NULL);
+	assert(Lenght > 0);
+
 	while (Lenght > 0)
 	{
 		//while( !( pSPIx->SR & (1 << SPI_SR_TXE) ) )  //This tests if the bit position is set

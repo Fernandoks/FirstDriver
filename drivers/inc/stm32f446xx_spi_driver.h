@@ -187,4 +187,49 @@ void SPI_Config_SSOE(SPI_RegDef_t *pSPIRegDef, uint8_t EnableDisable);
 void SPI_Clear_OVER(SPI_RegDef_t *pSPIRegDef);
 
 
+
+/***********************************************************
+ * ASSERT DEFINITIONS
+ ***********************************************************/
+
+#define IS_SPI(INSTANCE) (((INSTANCE) == SPI1) 					|| \
+                                        ((INSTANCE) == SPI2) 	|| \
+                                        ((INSTANCE) == SPI3) 	|| \
+                                        ((INSTANCE) == SPI4))
+
+
+
+#define IS_SPI_MODE(MODE) (((MODE) == SPI_DEVICE_MODE_MASTER)       		||\
+                            ((MODE) == SPI_DEVICE_MODE_SLAVE))
+
+
+#define IS_SPI_BUSCONFIG(MODE) (((MODE) == SPI_BUSCONFIG_FD)         		||\
+                            ((MODE) == SPI_BUSCONFIG_HD)          			||\
+							((MODE) == SPI_BUSCONFIG_SIMPLEX_RXONLY))
+
+#define IS_SPI_SCLKSPEED(INSTANCE) (((INSTANCE) == SPI_SCLKSPEED_DIV2) 			|| \
+                                        ((INSTANCE) == SPI_SCLKSPEED_DIV4)		|| \
+                                        ((INSTANCE) == SPI_SCLKSPEED_DIV8)		|| \
+                                        ((INSTANCE) == SPI_SCLKSPEED_DIV16) 	|| \
+                                        ((INSTANCE) == SPI_SCLKSPEED_DIV32) 	|| \
+                                        ((INSTANCE) == SPI_SCLKSPEED_DIV64) 	|| \
+                                        ((INSTANCE) == SPI_SCLKSPEED_DIV128) 	|| \
+										((INSTANCE) == SPI_SCLKSPEED_DIV256))
+
+#define IS_SPI_DFF(MODE) (((MODE) == SPI_DEVICE_MODE_MASTER)           ||\
+                            ((MODE) == SPI_DEVICE_MODE_SLAVE))
+
+#define IS_SPI_CPOL(MODE) (((MODE) == SPI_CPOL_HIGH)         ||\
+                            ((MODE) == SPI_CPOL_LOW))
+
+
+#define IS_SPI_CPHA(MODE) (((MODE) == SPI_CPHA_HIGH)         ||\
+                            ((MODE) == SPI_CPHA_LOW))
+
+
+#define IS_SPI_SSM(MODE) (((MODE) == SPI_SSM_ENABLE)         ||\
+                            ((MODE) == SPI_SSM_DISABLE))
+
+
+
 #endif /* INC_STM32F446XX_SPI_DRIVER_H_ */
