@@ -299,10 +299,12 @@ Status_t UART_SetBaudRate(UART_Handle_t *pUARTHandle)
 	return STATUS_OK;
 }
 
+/*********************************************************************
+ *
+ *  SEND / RECEIVE - BLOCKING
+ *
+ *********************************************************************/
 
-/*
- * Data send and Receive
- */
 void UART_SendData(UART_Handle_t *pUARTHandle)
 {
 	uint8_t *pTxBuffer =  pUARTHandle->pTxBuffer;
@@ -449,15 +451,112 @@ void UART_ReceiveDataString(UART_Handle_t *pUARTHandle, uint8_t *pRxBuffer)
 }
 
 
+/*********************************************************************
+ *
+ *  INTERRUPT
+ *
+ *********************************************************************/
 
-UART_Events_t UART_SendData_IT(UART_Handle_t *pUARTHandle)
+void UART_IRQInterruptConfig(IRQn_Type IRQNumber, uint8_t EnableDisable)
 {
-	return 0;
+
+	if (EnableDisable == ENABLE)
+	{
+		if (IRQNumber < 32){
+			//NVIC_ISER0
+			*NVIC_ISER0 |= (1 << IRQNumber);
+		}
+		else if( IRQNumber >= 32 && IRQNumber < 64){
+			//NVIC_ISER1
+			*NVIC_ISER1 |= (1 << (IRQNumber % 32));
+		}
+		else if (IRQNumber >= 64 && IRQNumber < 96){
+			//NVIC_ISER2
+			*NVIC_ISER2 |= (1 << (IRQNumber % 64));
+		}
+	}
+	else if (EnableDisable == DISABLE)
+	{
+		if (IRQNumber < 32){
+			*NVIC_ICER0 |= (1 << IRQNumber);
+		}
+		else if( IRQNumber >= 32 && IRQNumber < 64){
+			//NVIC_ICER1
+			*NVIC_ICER1 |= (1 << (IRQNumber % 32));
+		}
+		else if (IRQNumber >= 64 && IRQNumber < 96){
+			//NVIC_ICER2
+			*NVIC_ICER2 |= (1 << (IRQNumber % 64));
+		}
+	}
+
 }
 
-UART_Events_t UART_ReceiveData_IT(UART_Handle_t *pUARTHandle)
+void UART_IRQPriorityConfig(IRQn_Type IRQNumber,uint32_t IRQPriority)
 {
-	return 0;
+
+	uint8_t iprx = IRQNumber / 4;
+	uint8_t iprx_section = IRQNumber % 4;
+
+	uint8_t shift_IRQ = (8 * iprx_section) + (8 - NO_PR_BITS_IMPLEMENTED);
+	*(NVIC_PR_BASEADDRESS + (iprx * 4)) = (IRQPriority << shift_IRQ);
+
+}
+
+
+
+
+__inline void UART_IRQ_Control(UART_Handle_t *pUARTHandle, uint8_t CR1IRQbit, uint8_t CMD)
+{
+	if (CMD == ENABLE)
+	{
+		pUARTHandle->pUARTx->CR1 |= (1 << CR1IRQbit);
+	}
+	else
+	{
+		pUARTHandle->pUARTx->CR1 &= ~(1 << CR1IRQbit);
+	}
+}
+
+
+UART_States_t UART_SendDataBlockIT(UART_Handle_t *pUARTHandle,uint8_t *pTxBuffer, uint32_t Lenght)
+{
+	UART_States_t txstate = pUARTHandle->TxState;
+
+	if(txstate != USART_BUSY_TX)
+	{
+		pUARTHandle->TxLen = Lenght;
+		pUARTHandle->pTxBuffer = pTxBuffer;
+		pUARTHandle->TxState = USART_BUSY_TX;
+
+		//Enable TXE
+		UART_IRQ_Control(pUARTHandle,UART_CR1_TXEIE,ENABLE);
+
+		//EnableTC
+		UART_IRQ_Control(pUARTHandle,UART_CR1_TCIE,ENABLE);
+	}
+	return txstate;
+}
+
+
+UART_States_t UART_ReceiveBlockDataIT(UART_Handle_t *pUARTHandle,uint8_t *pRxBuffer, uint32_t Lenght)
+{
+	UART_States_t rxstate = pUARTHandle->RxState;
+
+	if(rxstate != UART_BUSY_RX)
+	{
+		pUARTHandle->RxLen = Lenght;
+		pUARTHandle->pRxBuffer = pRxBuffer;
+		pUARTHandle->RxState = UART_BUSY_RX;
+
+		(void)pUARTHandle->pUARTx->DR;
+
+		//Enable RXNE
+		UART_IRQ_Control(pUARTHandle,UART_CR1_RXNEIE,ENABLE);
+
+	}
+
+	return rxstate;
 }
 
 
@@ -474,11 +573,14 @@ FLAG_Status_t UART_GetFlagStatus(UART_RegDef_t *pUARTx, uint32_t FlagName)
 }
 
 
-uint8_t UART_ClearFlag(UART_RegDef_t *pUARTx, uint32_t FlagName)
+FLAG_Status_t UART_ClearFlag(UART_RegDef_t *pUARTx, uint32_t FlagName)
 {
+	pUARTx->SR &= ~(1 << FlagName);
 
-	return 0;
+	FLAG_Status_t flag = UART_GetFlagStatus(pUARTx, FlagName);
+	return flag;
 }
+
 
 
 void UART_PeripheralControl(UART_RegDef_t *pUARTx, uint32_t EnDis)
@@ -494,14 +596,161 @@ void UART_PeripheralControl(UART_RegDef_t *pUARTx, uint32_t EnDis)
 
 }
 
+/*********************************************************************
+ * @fn      		  - USART_IRQHandler
+ *
+ * @brief             -
+ *
+ * @param[in]         -
+ * @param[in]         -
+ * @param[in]         -
+ *
+ * @return            -
+ *
+ * @Note              -
 
-
-/*
- * Callback
  */
-uint8_t UART_EventCallback(UART_Handle_t *pUARTHandle, UART_Events_t Event)
-{
 
-	return 0;
+void UART_IRQHandling(UART_Handle_t *pUARTHandle)
+{
+	uint16_t *pbuffer;
+
+	uint32_t SRreg = pUARTHandle->pUARTx->SR;
+	uint32_t CR1reg = pUARTHandle->pUARTx->CR1;
+	uint32_t CR3reg = pUARTHandle->pUARTx->CR3;
+
+	//Check the state of TC and TCEIE
+	if ( (SRreg & (1ul << UART_SR_TC)) && (CR1reg & (1ul << UART_CR1_TCIE) ) )
+	{
+		//close transmission and call application callback if TxLen is zero
+		if ( pUARTHandle->TxState == USART_BUSY_TX)
+		{
+			if(! pUARTHandle->TxLen )
+			{
+				pUARTHandle->pUARTx->SR &= ~( 1 << UART_SR_TC);
+
+				pUARTHandle->TxState = UART_READY;
+				pUARTHandle->pTxBuffer = NULL;
+				pUARTHandle->TxLen = 0;
+
+				UART_EventCallback(pUARTHandle,UART_EVENT_TC);
+			}
+		}
+	}
+
+	//Check the state of TXE and TXEIE
+	if ( (SRreg & (1ul << UART_SR_TXE)) && (CR1reg & (1ul << UART_CR1_TXEIE) ) )
+	{
+		if(pUARTHandle->TxState == USART_BUSY_TX)
+		{
+			//Keep sending data until Txlen == 0
+			if(pUARTHandle->TxLen > 0)
+			{
+				//9BIT or 8BIT in a frame
+				if(pUARTHandle->UARTConfig.USART_WordLength == UART_WORD_9BITS)
+				{
+					pbuffer = (uint16_t*) pUARTHandle->pTxBuffer;
+					pUARTHandle->pUARTx->DR = (*pbuffer & (uint16_t)0x01FF);
+
+					//Parity
+					if(pUARTHandle->UARTConfig.USART_Parity == UART_PARITY_DISABLE)
+					{
+						pUARTHandle->pTxBuffer++;
+						pUARTHandle->pTxBuffer++;
+						pUARTHandle->TxLen -= 2;
+					}
+					else
+					{
+						pUARTHandle->pTxBuffer++;
+						pUARTHandle->TxLen-=1;
+					}
+				}
+				else
+				{
+					//8bit data transfer
+					pUARTHandle->pUARTx->DR = (*pUARTHandle->pTxBuffer  & (uint8_t)0xFF);
+
+					pUARTHandle->pTxBuffer++;
+					pUARTHandle->TxLen-=1;
+				}
+			}
+			if (pUARTHandle->TxLen == 0 )
+			{
+				//TxLen is zero - ClearFLAG
+				pUARTHandle->pUARTx->CR1 &= ~( 1 << UART_CR1_TXEIE);
+			}
+		}
+	}
+
+
+	//Check the state of RXE and RXEIE
+	if ( (SRreg & (1ul << UART_SR_RXNE)) && (CR1reg & (1ul << UART_CR1_RXNEIE) ) )
+	{
+
+	}
+
+	//CTS - Check the state of CTS, CTSE and CTSIE
+	if ( (SRreg & (1ul << UART_SR_CTS)) && (CR1reg & (1ul << UART_CR3_CTSIE) ) )
+	{
+		pUARTHandle->pUARTx->SR &=  ~( 1 << UART_SR_CTS);
+		UART_EventCallback(pUARTHandle,UART_EVENT_CTS);
+	}
+
+	//IDLE - Check the state of IDLE and IDLEIE
+	if ( (SRreg & (1ul << UART_SR_TC)) && (CR1reg & (1ul << UART_CR1_TCIE) ) )
+	{
+		pUARTHandle->pUARTx->SR &=  ~( 1 << UART_SR_IDLE);
+		UART_EventCallback(pUARTHandle,UART_EVENT_IDLE);
+	}
+
+	//OVERUN - Check the state of ORE and RXNEIE
+	if ( (SRreg & (1ul << UART_SR_TC)) && (CR1reg & (1ul << UART_CR1_TCIE) ) )
+	{
+		pUARTHandle->pUARTx->SR &=  ~( 1 << UART_SR_ORE);
+		UART_EventCallback(pUARTHandle,UART_EVENT_ORE);
+	}
+
+	//ERROR - Noise Flag, Overrun error and Framing Error
+
+	if( CR3reg & ( 1 << UART_CR3_EIE) )
+	{
+		if( SRreg & ( 1 << UART_SR_FE))
+		{
+			UART_EventCallback(pUARTHandle,UART_EVENT_FE);
+		}
+
+		if( SRreg & ( 1 << UART_SR_NF) )
+		{
+			UART_EventCallback(pUARTHandle,UART_EVENT_NF);
+		}
+
+		if(SRreg & ( 1 << UART_SR_ORE) )
+		{
+			UART_EventCallback(pUARTHandle,UART_EVENT_ORE);
+		}
+	}
+
+
+}
+
+
+/*********************************************************************
+ * @fn      		  - USART_EventCallback
+ *
+ * @brief             -
+ *
+ * @param[in]         -
+ * @param[in]         -
+ * @param[in]         -
+ *
+ * @return            -
+ *
+ * @Note              -
+
+ */
+__weak void UART_EventCallback(UART_Handle_t *pUARTHandle, UART_Events_t Event)
+{
+	__NOP();
+
 }
 

@@ -525,8 +525,8 @@ void SPI_IRQHandling(SPI_Handle_t *pSPIHandle)
 	 * Event Flags
 	 * TXE, RXNE, MODF, OVR, CRCERR, FRE
 	 */
-	uint8_t SRReg;
-	uint8_t CRReg;
+	uint32_t SRReg;
+	uint32_t CRReg;
 
 	SRReg = pSPIHandle->pSPIx->SR;
 	CRReg = pSPIHandle->pSPIx->CR2;

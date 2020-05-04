@@ -62,12 +62,14 @@ extern void initialise_monitor_handles();
 uint8_t* TxData = "Hello, World!";
 uint8_t RxData[100];
 
+UART_Handle_t pUART2;
+
 /*
  * START PROGRAM
  */
 int main()
 {
-	UART_Handle_t pUART2;
+
 
 	initialise_monitor_handles();
 
@@ -83,14 +85,18 @@ int main()
 	pUART2.TxLen = strlen((char*)pUART2.pTxBuffer);
 	UART_SendData(&pUART2);
 
+	UART_IRQInterruptConfig(USART2_IRQn, ENABLE);
+	UART_IRQPriorityConfig(USART2_IRQn,0);
+
+	UART_SendDataBlockIT(&pUART2,TxData, strlen((char*)TxData));
+
 
 	while(1)
 	{
-		//UART_ReceiveDataBlock(&pUART2,RxData,7);
-		UART_ReceiveDataString(&pUART2, &RxData);
-		pUART2.pTxBuffer = pUART2.pRxBuffer;
-		pUART2.TxLen = pUART2.RxLen;
-		UART_SendData(&pUART2);
+		//UART_ReceiveBlockDataIT(&pUART2, RxData, strlen((char*)RxData));
+		UART_ReceiveDataString(&pUART2, RxData);
+		TxData = RxData;
+		UART_SendDataBlockIT(&pUART2,TxData, strlen((char*)TxData));
 		GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_5);
 		delay_ms(100);
 	}
@@ -98,6 +104,11 @@ int main()
 	return 0;
 }
 
+
+void USART2_IRQHandler(void)
+{
+	UART_IRQHandling(&pUART2);
+}
 
 /*
  * EXTI Handler
