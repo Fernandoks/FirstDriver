@@ -13,8 +13,6 @@
  */
 #include "main.h"
 
-
-
 extern void initialise_monitor_handles();
 
 
@@ -40,9 +38,9 @@ int main()
 	UART_Conf(&pUART2);
 
 
-	pUART2.pTxBuffer = (uint8_t*)"Program Starting\r\n";
-	pUART2.TxLen = strlen((char*)pUART2.pTxBuffer);
-	UART_SendData(&pUART2);
+	uint8_t* TempBuffer = (uint8_t*)"Program Starting\r\n";
+	uint32_t Lenght = strlen((char*)pUART2.pTxBuffer);
+	UART_SendData(&pUART2, TempBuffer,Lenght );
 
 	UART_IRQInterruptConfig(USART2_IRQn, ENABLE);
 	UART_IRQPriorityConfig(USART2_IRQn,0);

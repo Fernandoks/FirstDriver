@@ -39,6 +39,7 @@ typedef struct
 	uint32_t USART_WordLength;
 	uint32_t USART_Parity;
 	uint32_t USART_HWFlowControl;
+	uint32_t USART_Oversampling;
 } UART_Config_t;
 
 
@@ -93,6 +94,10 @@ typedef struct
 // USART_WordLength;
 #define UART_WORD_8BITS			0
 #define UART_WORD_9BITS			1
+
+// USART Oversamping;
+#define UART_OVER16				0
+#define UART_OVER8				1
 
 // USART_Parity;
 #define UART_PARITY_DISABLE		0
@@ -154,7 +159,7 @@ static Status_t UART_SetBaudRate(UART_Handle_t *pUARTHandle);
 /*
  * Data send and Receive
  */
-void UART_SendData(UART_Handle_t *pUARTHandle);
+void UART_SendData(UART_Handle_t *pUARTHandle, uint8_t *pTxBuffer, uint32_t Lenght );
 void UART_ReceiveDataBlock(UART_Handle_t *pUARTHandle, uint8_t *pRxBuffer, uint32_t Lenght);
 void UART_ReceiveDataString(UART_Handle_t *pUARTHandle, uint8_t *pRxBuffer);
 

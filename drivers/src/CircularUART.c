@@ -119,9 +119,8 @@ uint16_t CircularUART_Send(cbuf_handle_t cbuf, UART_Handle_t* pUART)
 				break;
 			}
 		}
-		pUART->TxLen = length;
-		pUART->pTxBuffer = data;
-		UART_SendData(pUART);
+
+		UART_SendData(pUART,&data,length );
 }
 
 

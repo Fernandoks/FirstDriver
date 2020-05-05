@@ -149,6 +149,17 @@ Status_t UART_Init(UART_Handle_t *pUARTHandle)
 	}
 	else return STATUS_ERROR;
 
+	//Oversampling
+
+	if ( pUARTHandle->UARTConfig.USART_Oversampling == UART_OVER16)
+	{
+		CR1temp &= ~(1ul << UART_CR1_OVER8);
+	}
+	else
+	{
+		CR1temp |= (1ul << UART_CR1_OVER8);
+	}
+
 	//Stopbits - default 1
 	if (pUARTHandle->UARTConfig.USART_StopBits == UART_STOPBITS_1)
 	{
@@ -192,6 +203,8 @@ Status_t UART_Init(UART_Handle_t *pUARTHandle)
 		CR3temp |= (1ul << UART_CR3_RTSE);
 	}
 	else return STATUS_ERROR;
+
+
 
 
 	//baudrate
@@ -317,15 +330,15 @@ static Status_t UART_SetBaudRate(UART_Handle_t *pUARTHandle)
  *
  *********************************************************************/
 
-void UART_SendData(UART_Handle_t *pUARTHandle)
+void UART_SendData(UART_Handle_t *pUARTHandle, uint8_t *pTxBuffer, uint32_t Lenght )
 {
 
 	assert(IS_UART(pUARTHandle->pUARTx));
 	assert(pUARTHandle->pTxBuffer != NULL);
 	assert(pUARTHandle->TxLen >= 0);
 
-	uint8_t *pTxBuffer =  pUARTHandle->pTxBuffer;
-	uint32_t Lenght = pUARTHandle->TxLen;
+	//uint8_t *pTxBuffer =  pUARTHandle->pTxBuffer;
+	//uint32_t Lenght = pUARTHandle->TxLen;
 
 	for(uint32_t i = 0 ; i < Lenght; ++i)
 	{
