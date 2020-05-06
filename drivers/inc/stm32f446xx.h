@@ -12,7 +12,7 @@
 
 #include <stdint.h> //stdint is mandatory due uint32_t
 #include <stddef.h>
-
+#include <assert.h>
 
 
 /*Generic Macros */

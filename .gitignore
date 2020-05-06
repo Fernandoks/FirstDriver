@@ -74,7 +74,8 @@ local.properties
 .project
 .settings/
 
-#Debug
+# Debug
+debug/
 .Debug/
 Debug/
 Debug

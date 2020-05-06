@@ -13,6 +13,8 @@
  */
 Status_t UART_PeriClockControl(UART_RegDef_t *pUARTx, uint8_t EnableDisable)
 {
+	assert(IS_UART(pUARTx));
+
 	if (EnableDisable == ENABLE)
 		{
 			if (pUARTx == UART1)
@@ -86,6 +88,15 @@ Status_t UART_PeriClockControl(UART_RegDef_t *pUARTx, uint8_t EnableDisable)
  */
 Status_t UART_Init(UART_Handle_t *pUARTHandle)
 {
+	assert(IS_UART(pUARTHandle->pUARTx));
+	assert(IS_UART_MODE(pUARTHandle->UARTConfig.USART_Mode));
+	assert(IS_UART_BAUDRATE(pUARTHandle->UARTConfig.USART_BaudRate));
+	assert(IS_UART_FLOW(pUARTHandle->UARTConfig.USART_HWFlowControl));
+	assert(IS_UART_PARITY(pUARTHandle->UARTConfig.USART_Parity));
+	assert(IS_UART_STOPBITS(pUARTHandle->UARTConfig.USART_StopBits));
+	assert(IS_UART_WORD(pUARTHandle->UARTConfig.USART_WordLength));
+
+
 	UART_PeriClockControl(pUARTHandle->pUARTx, ENABLE);
 
 	uint32_t CR1temp = 0;
@@ -138,6 +149,17 @@ Status_t UART_Init(UART_Handle_t *pUARTHandle)
 	}
 	else return STATUS_ERROR;
 
+	//Oversampling
+
+	if ( pUARTHandle->UARTConfig.USART_Oversampling == UART_OVER16)
+	{
+		CR1temp &= ~(1ul << UART_CR1_OVER8);
+	}
+	else
+	{
+		CR1temp |= (1ul << UART_CR1_OVER8);
+	}
+
 	//Stopbits - default 1
 	if (pUARTHandle->UARTConfig.USART_StopBits == UART_STOPBITS_1)
 	{
@@ -183,6 +205,8 @@ Status_t UART_Init(UART_Handle_t *pUARTHandle)
 	else return STATUS_ERROR;
 
 
+
+
 	//baudrate
 	if ( UART_SetBaudRate(pUARTHandle) == STATUS_ERROR)
 	{
@@ -204,6 +228,7 @@ Status_t UART_Init(UART_Handle_t *pUARTHandle)
 
 Status_t UART_DeInit(UART_RegDef_t *pUARTx)
 {
+	assert(IS_UART(pUARTx));
 
 	if (pUARTx == UART1)
 	{
@@ -238,7 +263,7 @@ Status_t UART_DeInit(UART_RegDef_t *pUARTx)
 }
 
 
-Status_t UART_SetBaudRate(UART_Handle_t *pUARTHandle)
+static Status_t UART_SetBaudRate(UART_Handle_t *pUARTHandle)
 {
 	//USART1 and 6 are APB2
 	//USART2,3,4,5 are APB1
@@ -305,10 +330,15 @@ Status_t UART_SetBaudRate(UART_Handle_t *pUARTHandle)
  *
  *********************************************************************/
 
-void UART_SendData(UART_Handle_t *pUARTHandle)
+void UART_SendData(UART_Handle_t *pUARTHandle, uint8_t *pTxBuffer, uint32_t Lenght )
 {
-	uint8_t *pTxBuffer =  pUARTHandle->pTxBuffer;
-	uint32_t Lenght = pUARTHandle->TxLen;
+
+	assert(IS_UART(pUARTHandle->pUARTx));
+	assert(pUARTHandle->pTxBuffer != NULL);
+	assert(pUARTHandle->TxLen >= 0);
+
+	//uint8_t *pTxBuffer =  pUARTHandle->pTxBuffer;
+	//uint32_t Lenght = pUARTHandle->TxLen;
 
 	for(uint32_t i = 0 ; i < Lenght; ++i)
 	{
@@ -347,6 +377,10 @@ void UART_SendData(UART_Handle_t *pUARTHandle)
 
 void UART_ReceiveDataBlock(UART_Handle_t *pUARTHandle, uint8_t *pRxBuffer, uint32_t Lenght)
 {
+	assert(IS_UART(pUARTHandle->pUARTx));
+	assert(pRxBuffer != NULL);
+	assert(Lenght >= 0);
+
 	for(uint32_t i = 0 ; i < Lenght; ++i)
 	{
 		//Wait until RXNE is set
