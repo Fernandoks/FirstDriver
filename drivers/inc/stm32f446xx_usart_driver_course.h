@@ -15,7 +15,6 @@
 
 /* GPIO_PIN_CONF_TypeDef */
 typedef struct{
-	uint8_t USART_Instance;
 	uint32_t USART_BaudRate; //size might change
 	uint8_t USART_WordLength;
 	uint8_t USART_StopBits;//0=1 bits, 1=0.5 bit, 2=2 bits, 3=1.5 bit
@@ -28,15 +27,11 @@ typedef struct{
 typedef struct{
 	USART_RegDef_t* pUSART; /*holds register addresses*/
 	USART_PIN_CONF_TypeDef USART_Pin_Config; /* holds pins settings */
+	uint8_t* USART_TxBuffer;
+	uint8_t* USART_RxBuffer;
+	uint8_t USART_TxState;
+	uint8_t USART_RxState;
 }USART_Handler_TypedDef;
-
-/* INSTANCE */
-#define USART_INSTANCE_1			1
-#define USART_INSTANCE_2			2
-#define USART_INSTANCE_3			3
-#define USART_INSTANCE_4			4
-#define USART_INSTANCE_5			5
-#define USART_INSTANCE_6			6
 
 /* WORD LENGTH */
 #define USART_WORD_LENGTH_8DATA		0
@@ -62,12 +57,32 @@ typedef struct{
 #define USART_WAKE_ACTIVE_MODE		0
 #define USART_WAKE_MUTE_MODE		1
 
+/* BAUD RATE  */
+#define USART_BAUD_RATE_1200		1200
+#define USART_BAUD_RATE_2400		2400
+#define USART_BAUD_RATE_9600		9600
+#define USART_BAUD_RATE_19200		19200
+#define USART_BAUD_RATE_38400		38400
+#define USART_BAUD_RATE_57600		57600
+#define USART_BAUD_RATE_115200		115200
+#define USART_BAUD_RATE_230400		230400
+#define USART_BAUD_RATE_460800		460800
+#define USART_BAUD_RATE_921600		921600
+#define USART_BAUD_RATE_1792000		1792000
+#define USART_BAUD_RATE_1843200		1843200
+#define USART_BAUD_RATE_3584000		3584000
+#define USART_BAUD_RATE_3686400		3686400
+
 /*** USART Actions ***/
+void UART_PeriClockControl(USART_RegDef_t *pUSARTx, uint8_t EnableDisable);
+
 void USART_Initialize(USART_Handler_TypedDef* pUSART_Handler);
 
 void USART_WriteData(USART_Handler_TypedDef* pUSART_Handler, uint8_t* pUSART_TX_Buffer);
 
 void USART_ReadData(USART_Handler_TypedDef* pUSART_Handler);
+
+void USART_SetBaudRate(USART_Handler_TypedDef* pUSART_Handler);
 
 #endif /* INC_STM32F446XX_USART_DRIVER_COURSE_H_ */
 
