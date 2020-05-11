@@ -24,7 +24,7 @@ typedef struct{
 
 /* GPIO_Handler_TypedDef */
 typedef struct{
-	GPIO_RegDef_t* pGPIO; /*holds register addresses*/
+	_Quentin_GPIO_RegDef_t* pGPIO; /*holds register addresses*/
 	GPIO_PIN_CONF_TypeDef GPIO_Pin_Config; /* holds pins settings */
 }GPIO_Handler_TypedDef;
 
@@ -71,18 +71,18 @@ typedef struct{
 /************** GPIO ACTIONS *********************/
 
 /* Peripheral Clock Control */
-void GPIO_PCLK(GPIO_RegDef_t* pGPIO, uint8_t status);
+void GPIO_PCLK(_Quentin_GPIO_RegDef_t* pGPIO, uint8_t status);
 
 /* GPIO Initialization */
 void GPIO_Initialize(GPIO_Handler_TypedDef* pGPIO_Handler);
-void GPIO_DeInitialize(GPIO_RegDef_t* pGPIO); /* with the GPIO regdef we can use the GPIO_RESET function */
+void GPIO_DeInitialize(_Quentin_GPIO_RegDef_t* pGPIO); /* with the GPIO regdef we can use the GPIO_RESET function */
 
 /* GPIO PIN management */
-uint8_t GPIO_ReadInputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber); /* we don't use the handler because it might contain more than one pin number */
-uint16_t GPIO_ReadInputPORT(GPIO_RegDef_t* pGPIO);
-void GPIO_WriteOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber, uint8_t value);
-void GPIO_WriteOutputPORT(GPIO_RegDef_t* pGPIO, uint16_t value);
-void GPIO_ToggleOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber);
+uint8_t GPIO_ReadInputPIN(_Quentin_GPIO_RegDef_t* pGPIO, uint8_t PinNumber); /* we don't use the handler because it might contain more than one pin number */
+uint16_t GPIO_ReadInputPORT(_Quentin_GPIO_RegDef_t* pGPIO);
+void GPIO_WriteOutputPIN(_Quentin_GPIO_RegDef_t* pGPIO, uint8_t PinNumber, uint8_t value);
+void GPIO_WriteOutputPORT(_Quentin_GPIO_RegDef_t* pGPIO, uint16_t value);
+void GPIO_ToggleOutputPIN(_Quentin_GPIO_RegDef_t* pGPIO, uint8_t PinNumber);
 
 void GPIO_Config_IRQ(uint8_t IRQNumber, uint8_t EnableDisable);
 void GPIO_Clear_IRQ(uint8_t PinNumber);

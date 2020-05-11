@@ -25,21 +25,29 @@ typedef struct{
 }USART_PIN_CONF_TypeDef;
 
 typedef struct{
-	USART_RegDef_t* pUSART; /*holds register addresses*/
+	_Quentin_USART_RegDef_t* pUSART; /*holds register addresses*/
 	USART_PIN_CONF_TypeDef USART_Pin_Config; /* holds pins settings */
 	uint8_t* USART_TxBuffer;
 	uint8_t* USART_RxBuffer;
+	uint32_t TxLength;
+	uint32_t RxLength;
 	uint8_t USART_TxState;
 	uint8_t USART_RxState;
 }USART_Handler_TypedDef;
 
 /* WORD LENGTH */
-#define USART_WORD_LENGTH_8DATA		0
-#define USART_WORD_LENGTH_9DATA		1
+#define USART_WORD_LENGTH_8			0
+#define USART_WORD_LENGTH_9			1
 
 /* WAKEUP METHOD */
 #define USART_WAKE_IDLE_LINE		0
 #define USART_WAKE_ADDRESS_MARK		1
+
+/* STOP BIT */
+#define USART_STOP_BIT_1			0
+#define USART_STOP_BIT_0_5			1
+#define USART_STOP_BIT_2			2
+#define USART_STOP_BIT_1_5			3
 
 /* PARITY */
 #define USART_PARITY_DISABLE	DISABLE
@@ -48,6 +56,11 @@ typedef struct{
 /* PARITY SELECTION */
 #define USART_PARITY_EVEN			0
 #define USART_PARITY_ODD			1
+
+/* USART MODE */
+#define USART_MODE_TX				0
+#define USART_MODE_RX				1
+#define USART_MODE_TXRX				2	//USART synchronous mode ?
 
 /* OVERSAMPLING */
 #define USART_OVERSAMPLING_16		0
@@ -73,12 +86,28 @@ typedef struct{
 #define USART_BAUD_RATE_3584000		3584000
 #define USART_BAUD_RATE_3686400		3686400
 
+/* BIT SHIFT */
+#define USART_SHIFT_CR1_OVER8		15
+#define USART_SHIFT_CR1_UE			13
+#define USART_SHIFT_CR1_M			12
+#define USART_SHIFT_CR1_PCE			10
+#define USART_SHIFT_CR1_TE			3
+#define USART_SHIFT_CR1_RE			2
+
+#define USART_SHIFT_CR2_STOP		12
+
+#define USART_SHIFT_SR_TXE			7
+#define USART_SHIFT_SR_TC			6
+#define USART_SHIFT_SR_RXNE			5
+
+#define USART_SHIFT_BRR_MANTISSA	4
+
 /*** USART Actions ***/
-void UART_PeriClockControl(USART_RegDef_t *pUSARTx, uint8_t EnableDisable);
+void UART_PCLKControl(_Quentin_USART_RegDef_t *pUSARTx, uint8_t EnableDisable);
 
 void USART_Initialize(USART_Handler_TypedDef* pUSART_Handler);
 
-void USART_WriteData(USART_Handler_TypedDef* pUSART_Handler, uint8_t* pUSART_TX_Buffer);
+void USART_WriteData(USART_Handler_TypedDef* pUSART_Handler);
 
 void USART_ReadData(USART_Handler_TypedDef* pUSART_Handler);
 

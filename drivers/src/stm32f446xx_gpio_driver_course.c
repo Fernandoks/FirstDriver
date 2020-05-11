@@ -12,7 +12,7 @@
 
 
 /* Peripheral clock control */
-void GPIO_PCLK(GPIO_RegDef_t* pGPIO, uint8_t status)
+void GPIO_PCLK(_Quentin_GPIO_RegDef_t* pGPIO, uint8_t status)
 {
 	if(status == ENABLE)
 	{
@@ -136,7 +136,7 @@ void GPIO_Initialize(GPIO_Handler_TypedDef* pGPIO_Handler)
 }
 
 /* GPIO Deinitialization */
-void GPIO_DeInitialize(GPIO_RegDef_t* pGPIO)
+void GPIO_DeInitialize(_Quentin_GPIO_RegDef_t* pGPIO)
 {
 	if(pGPIO == GPIOA){
 		GPIOA_RESET();
@@ -172,19 +172,19 @@ void GPIO_DeInitialize(GPIO_RegDef_t* pGPIO)
 }
 
 /* GPIO Read Input PIN */
-uint8_t GPIO_ReadInputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber)
+uint8_t GPIO_ReadInputPIN(_Quentin_GPIO_RegDef_t* pGPIO, uint8_t PinNumber)
 {
 	return (uint8_t)((pGPIO->IDR >> PinNumber) & 0x00000001);
 }
 
 /* GPIO Read Input Port */
-uint16_t GPIO_ReadInputPORT(GPIO_RegDef_t* pGPIO)
+uint16_t GPIO_ReadInputPORT(_Quentin_GPIO_RegDef_t* pGPIO)
 {
 	return (uint16_t)(pGPIO->IDR);
 }
 
 /* GPIO Write Output PIN */
-void GPIO_WriteOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber, uint8_t value)
+void GPIO_WriteOutputPIN(_Quentin_GPIO_RegDef_t* pGPIO, uint8_t PinNumber, uint8_t value)
 {
 	if(value == PIN_SET_ENABLE)
 	{
@@ -197,13 +197,13 @@ void GPIO_WriteOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber, uint8_t value)
 }
 
 /* GPIO Write Output Port */
-void GPIO_WriteOutputPORT(GPIO_RegDef_t* pGPIO, uint16_t value)
+void GPIO_WriteOutputPORT(_Quentin_GPIO_RegDef_t* pGPIO, uint16_t value)
 {
 	pGPIO->BSRR |= value; //set the requested BS bits to 1
 }
 
 /* GPIO Toogle Output PIN */
-void GPIO_ToggleOutputPIN(GPIO_RegDef_t* pGPIO, uint8_t PinNumber)
+void GPIO_ToggleOutputPIN(_Quentin_GPIO_RegDef_t* pGPIO, uint8_t PinNumber)
 {
 	uint32_t temp;
 	temp = (pGPIO->ODR >> PinNumber) & 0x00000001;
