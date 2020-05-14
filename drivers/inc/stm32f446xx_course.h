@@ -166,7 +166,7 @@ typedef struct{
 	__vo uint32_t PLLDCKCFGR;
 	__vo uint32_t CKGATENR;
 	__vo uint32_t DCKCFGR2;
-} RCC_RegDef_t;
+} _Quentin_RCC_RegDef_t;
 
 /* GPIO_RegDef_t */
 typedef struct{
@@ -180,7 +180,17 @@ typedef struct{
 	__vo uint32_t LCKR;
 	__vo uint32_t AFRL;
 	__vo uint32_t AFRH;
-}GPIO_RegDef_t;
+}_Quentin_GPIO_RegDef_t;
+
+typedef struct{
+	__vo uint32_t SR;
+	__vo uint32_t DR;
+	__vo uint32_t BRR;
+	__vo uint32_t CR1;
+	__vo uint32_t CR2;
+	__vo uint32_t CR3;
+	__vo uint32_t GTPR;
+}_Quentin_USART_RegDef_t;
 
 /* EXTI_RegDef_t */
 typedef struct{
@@ -190,7 +200,7 @@ typedef struct{
 	__vo uint32_t FTSR;
 	__vo uint32_t SWIER;
 	__vo uint32_t PR;
-} EXTI_RegDef_t;
+}_Quentin_EXTI_RegDef_t;
 
 /* SYSCFG_RegDef_t */
 typedef struct{
@@ -204,7 +214,7 @@ typedef struct{
 	__vo uint32_t CMPCR;
 	uint32_t RESERVED1[2];
 	__vo uint32_t CFGR;
-} SYSCFG_RegDef_t;
+}_Quentin_SYSCFG_RegDef_t;
 
 /* SPI_RegDef_t */
 typedef struct{
@@ -217,29 +227,36 @@ typedef struct{
 	__vo uint32_t TXCRCR;
 	__vo uint32_t I2SCFGR;
 	__vo uint32_t I2SPR;
-} SPI_RegDef_t;
+}_Quentin_SPI_RegDef_t;
 
-#define GPIOA					((GPIO_RegDef_t*)GPIOA_BASEADDRESS)
-#define GPIOB					((GPIO_RegDef_t*)GPIOB_BASEADDRESS)
-#define GPIOC					((GPIO_RegDef_t*)GPIOC_BASEADDRESS)
-#define GPIOD					((GPIO_RegDef_t*)GPIOD_BASEADDRESS)
-#define GPIOE					((GPIO_RegDef_t*)GPIOE_BASEADDRESS)
-#define GPIOF					((GPIO_RegDef_t*)GPIOF_BASEADDRESS)
-#define GPIOG					((GPIO_RegDef_t*)GPIOG_BASEADDRESS)
-#define GPIOH					((GPIO_RegDef_t*)GPIOH_BASEADDRESS)
+#define GPIOA					((_Quentin_GPIO_RegDef_t*)GPIOA_BASEADDRESS)
+#define GPIOB					((_Quentin_GPIO_RegDef_t*)GPIOB_BASEADDRESS)
+#define GPIOC					((_Quentin_GPIO_RegDef_t*)GPIOC_BASEADDRESS)
+#define GPIOD					((_Quentin_GPIO_RegDef_t*)GPIOD_BASEADDRESS)
+#define GPIOE					((_Quentin_GPIO_RegDef_t*)GPIOE_BASEADDRESS)
+#define GPIOF					((_Quentin_GPIO_RegDef_t*)GPIOF_BASEADDRESS)
+#define GPIOG					((_Quentin_GPIO_RegDef_t*)GPIOG_BASEADDRESS)
+#define GPIOH					((_Quentin_GPIO_RegDef_t*)GPIOH_BASEADDRESS)
 
-#define RCC						((RCC_RegDef_t*)RCC_BASEADDRESS)
+#define RCC						((_Quentin_RCC_RegDef_t*)RCC_BASEADDRESS)
 
-#define EXTI					((EXTI_RegDef_t*)EXTI_BASEADDRESS)
+#define EXTI					((_Quentin_EXTI_RegDef_t*)EXTI_BASEADDRESS)
 
-#define SYSCFG					((SYSCFG_RegDef_t*)SYSCFG_BASEADDRESS)
+#define SYSCFG					((_Quentin_SYSCFG_RegDef_t*)SYSCFG_BASEADDRESS)
 
 
-#define SPI1					((SPI_RegDef_t*)SPI1_BASEADDRESS)
-#define SPI2					((SPI_RegDef_t*)SPI2_BASEADDRESS)
-#define SPI3					((SPI_RegDef_t*)SPI3_BASEADDRESS)
-#define SPI4					((SPI_RegDef_t*)SPI4_BASEADDRESS)
+#define SPI1					((_Quentin_SPI_RegDef_t*)SPI1_BASEADDRESS)
+#define SPI2					((_Quentin_SPI_RegDef_t*)SPI2_BASEADDRESS)
+#define SPI3					((_Quentin_SPI_RegDef_t*)SPI3_BASEADDRESS)
+#define SPI4					((_Quentin_SPI_RegDef_t*)SPI4_BASEADDRESS)
 
+
+#define USART1					((_Quentin_USART_RegDef_t*)USART1_BASEADDRESS)
+#define USART2					((_Quentin_USART_RegDef_t*)USART2_BASEADDRESS)
+#define USART3					((_Quentin_USART_RegDef_t*)USART3_BASEADDRESS)
+#define UART4					((_Quentin_USART_RegDef_t*)UART4_BASEADDRESS)
+#define UART5					((_Quentin_USART_RegDef_t*)UART5_BASEADDRESS)
+#define USART6					((_Quentin_USART_RegDef_t*)USART6_BASEADDRESS)
 /*
  * Clock Enable Macros for GPIOx
  */
@@ -333,6 +350,16 @@ typedef struct{
 #define UART4_PCLK_EN()			( RCC->APB1ENR |= (1 << 19) )
 #define UART5_PCLK_EN()			( RCC->APB1ENR |= (1 << 20) )
 #define USART6_PCLK_EN()		( RCC->APB2ENR |= (1 << 5)	)
+
+/*
+ * Clock Disable Macros for USART
+ */
+#define USART1_PCLK_DI()		( RCC->APB2ENR &= ~(1 << 4) )
+#define USART2_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 17) )
+#define USART3_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 18) )
+#define UART4_PCLK_DI()			( RCC->APB1ENR &= ~(1 << 19) )
+#define UART5_PCLK_DI()			( RCC->APB1ENR &= ~(1 << 20) )
+#define USART6_PCLK_DI()		( RCC->APB2ENR &= ~(1 << 5)	)
 
 #endif /* STM32F446RE_H_ */
 
