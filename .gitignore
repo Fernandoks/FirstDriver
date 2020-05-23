@@ -13,6 +13,7 @@
 *.pydevproject
 .project
 .metadata
+.metadata/
 bin/
 tmp/
 *.tmp
@@ -21,10 +22,14 @@ tmp/
 *~.nib
 local.properties
 .classpath
-.settings/
 .loadpath
 .bin
 .list
+log_file.txt
+.mxproject
+project.ioc
+mx.scratch
+*.tilen majerle
 
 # External tool builders
 .externalToolBuilders/
@@ -70,17 +75,19 @@ local.properties
 *.mk
 
 # Eclipse CDT project files
-.cproject
-.project
+*.cproject
+*.project
 .settings/
 
 # Debug
+build/
 debug/
 .Debug/
 Debug/
 Debug
 Debug.*
 */Debug
+*/**/Debug
 
 # Vagrant directory
 .vagrant/
