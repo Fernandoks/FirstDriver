@@ -89,6 +89,10 @@ Debug.*
 */Debug
 */**/Debug
 
+# Config files
+*.cfg
+*.log
+
 # Vagrant directory
 .vagrant/
 
